@@ -9,14 +9,17 @@ namespace HoloBot
 {
     internal class ArduinoComPort
     {
+        enum FirmataCommand : byte
+        {
+            PinMode = 0xF4,
+            DigitalWrite = 0x90,
+        };
+
         enum SysEx : byte
         {
             Start = 0xF0,
             End = 0xF7,
             StepperCommand = 0x72,
-            PinMode = 0xF4,
-            DigitalWrite = 0x90,
-
         };
 
         enum StepperCommand : byte
@@ -109,11 +112,9 @@ namespace HoloBot
 
             byte[] commandBuffer =
             {
-                (byte)SysEx.Start,
-                (byte)SysEx.PinMode,
+                (byte)FirmataCommand.PinMode,
                 pin,
-                (byte)mode,
-                (byte)SysEx.End
+                (byte)mode
             };
 
             await WriteData(commandBuffer);
@@ -135,11 +136,9 @@ namespace HoloBot
 
             byte[] commandBuffer =
             {
-                (byte)SysEx.Start,
-                (byte)(((byte)(SysEx.DigitalWrite)) | port),
+                (byte)(((byte)(FirmataCommand.DigitalWrite)) | port),
                 (byte)(portValue & 0x7f),
-                (byte)((portValue >> 7) & 0x7F),
-                (byte)SysEx.End
+                (byte)((portValue >> 7) & 0x7F)
             };
 
             await WriteData(commandBuffer);

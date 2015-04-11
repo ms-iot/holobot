@@ -106,7 +106,7 @@ namespace HoloBot
                 {
                     case "stop":
                         {
-                            bot.Stop();
+                            await bot.Stop();
                             await WriteResponseAsync("200 OK", successMsg, outstream);
                             break;
                         }
@@ -127,7 +127,7 @@ namespace HoloBot
                         {
                             float dstl = float.Parse(querybag.GetFirstValueByName("dstl"));
                             float dstr = float.Parse(querybag.GetFirstValueByName("dstr"));
-                            bot.Move(dstl, dstr);
+                            await bot.Move(dstl, dstr);
                             await WriteResponseAsync("200 OK", successMsg, outstream);
                             break;
                         }
@@ -143,7 +143,7 @@ namespace HoloBot
                     case "rotate":
                         {
                             float deg = float.Parse(querybag.GetFirstValueByName("deg"));
-                            bot.Rotate(deg);
+                            await bot.Rotate(deg);
                             await WriteResponseAsync("200 OK", successMsg, outstream);
                             break;
                         }
