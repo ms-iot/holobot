@@ -219,6 +219,39 @@ namespace HoloBot
             await WriteData(commandBuffer);
         }
 
+        public async Task RaiseNeck(uint duration)
+        {
+            byte[] commandBuffer =
+            {
+                (byte)SysEx.Start,
+                // DC Motor Pin analogwrite call
+                (byte)SysEx.End
+            };
+            await WriteData(commandBuffer);
+        }
+
+        public async Task LowerNeck(uint duration)
+        {
+            byte[] commandBuffer =
+            {
+                (byte)SysEx.Start,
+                // DC Motor Pin analogwrite call
+                (byte)SysEx.End
+            };
+            await WriteData(commandBuffer);
+        }
+
+        public async Task StopNeck()
+        {
+            byte[] commandBuffer =
+            {
+                (byte)SysEx.Start,
+                // DC Motor Pin analogwrite call
+                (byte)SysEx.End
+            };
+            await WriteData(commandBuffer);
+        }
+
         public async Task WriteData(byte[] data)
         {
             if (!IsConnected)

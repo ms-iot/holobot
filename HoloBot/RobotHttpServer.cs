@@ -149,13 +149,21 @@ namespace HoloBot
                         }
                     case "neckextend":
                         {
-                            bot.RaiseNeck();
+                            if (!bot.NeckExtended)
+                            {
+                                await bot.RaiseNeck();
+                            }
+
                             await WriteResponseAsync("200 OK", botCmd, outstream);
                             break;
                         }
                     case "neckretract":
                         {
-                            bot.LowerNeck();
+                            if (bot.NeckExtended)
+                            {
+                                await bot.LowerNeck();
+                            }
+
                             await WriteResponseAsync("200 OK", successMsg, outstream);
                             break;
                         }

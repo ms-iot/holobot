@@ -15,6 +15,7 @@ namespace HoloBot
         public const float wheelBaseRadius = wheelBase / 2.0f;
         public const short maxSpeed = 1500;
         public const short acceleration = 800;
+        public const uint neckTravelDuration = 3000; // ms
 
         private ArduinoComPort arduinoPort = new ArduinoComPort();
 
@@ -26,6 +27,8 @@ namespace HoloBot
 
         private byte ledClockPin = 10;
         private byte ledDataPin = 9;
+
+        private bool neckextended = false;
 
         private int outstandingMoves = 0;
 
@@ -48,6 +51,12 @@ namespace HoloBot
         public bool HasArduino
         {
             get { return arduinoPort.IsConnected;  }
+            private set { }
+        }
+
+        public bool NeckExtended
+        {
+            get { return neckextended; }
             private set { }
         }
 
@@ -120,16 +129,20 @@ namespace HoloBot
             await arduinoPort.SetLEDStripColor(r, g, b);
         }
 
-        public void RaiseNeck()
+        public async Task RaiseNeck()
         {
+            if (!neckextended)
+            {
+                await arduinoPort.RaiseNeck(neckTravelDuration);
+            }
         }
 
-        public void LowerNeck()
+        public async Task LowerNeck()
         {
-        }
-
-        public void StopNeck()
-        {
+            if (neckextended)
+            {
+                await arduinoPort.LowerNeck(neckTravelDuration);
+            }
         }
     }
 }
