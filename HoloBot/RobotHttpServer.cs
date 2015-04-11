@@ -133,9 +133,33 @@ namespace HoloBot
                         }
                     case "setcolor":
                         {
-                            byte r = byte.Parse(querybag.GetFirstValueByName("r"));
-                            byte g = byte.Parse(querybag.GetFirstValueByName("g"));
-                            byte b = byte.Parse(querybag.GetFirstValueByName("b"));
+                            byte r = 0;
+                            byte g = 0;
+                            byte b = 0;
+
+                            // queryBag will throw an exception if it doesn't find it. 
+                            // And you can't query if it is there.
+                            try
+                            {
+                                r = byte.Parse(querybag.GetFirstValueByName("r"));
+                            }
+                            catch
+                            { }
+
+                            try
+                            {
+                                g = byte.Parse(querybag.GetFirstValueByName("g"));
+                            }
+                            catch
+                            { }
+
+                            try
+                            {
+                                b = byte.Parse(querybag.GetFirstValueByName("b"));
+                            }
+                            catch
+                            { }
+
                             await bot.SetLedColor(r, g, b);
                             await WriteResponseAsync("200 OK", successMsg, outstream);
                             break;
