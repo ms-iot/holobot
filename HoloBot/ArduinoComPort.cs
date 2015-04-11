@@ -20,6 +20,8 @@ namespace HoloBot
             Start = 0xF0,
             End = 0xF7,
             StepperCommand = 0x72,
+            LEDStripConfigCommand = 0x74,
+            LEDStripColorCommand = 0x75
         };
 
         enum StepperCommand : byte
@@ -185,6 +187,34 @@ namespace HoloBot
             };
 
             stepperComplete[deviceNumber] = completion;
+
+            await WriteData(commandBuffer);
+        }
+
+        public async Task SendLEDStripConfig(byte clockPin, byte dataPin)
+        {
+            byte[] commandBuffer =
+            {
+                (byte)SysEx.Start,
+                (byte)SysEx.LEDStripConfigCommand,
+                clockPin,
+                dataPin,
+                (byte)SysEx.End
+            };
+
+            await WriteData(commandBuffer);
+        }
+        public async Task SetLEDStripColor(byte r, byte g, byte b)
+        {
+            byte[] commandBuffer =
+            {
+                (byte)SysEx.Start,
+                (byte)SysEx.LEDStripColorCommand,
+                r,
+                g,
+                b,
+                (byte)SysEx.End
+            };
 
             await WriteData(commandBuffer);
         }

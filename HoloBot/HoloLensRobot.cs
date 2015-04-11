@@ -21,9 +21,11 @@ namespace HoloBot
         private byte stepperLeftDevice = 0;
         private byte stepperRightDevice = 1;
 
-        private byte stepperLeftEnable = 5;
-        private byte stepperRightEnable = 8;
+        private byte stepperLeftEnable = 5;     // Inverted enable
+        private byte stepperRightEnable = 8;     // Inverted enable
 
+        private byte ledClockPin = 10;
+        private byte ledDataPin = 9;
 
         private int outstandingMoves = 0;
 
@@ -33,6 +35,14 @@ namespace HoloBot
 
             await arduinoPort.SendStepperConfig(stepperLeftDevice, stepsPerRotation, 2, 4);
             await arduinoPort.SendStepperConfig(stepperRightDevice, stepsPerRotation, 6, 7);
+
+            await arduinoPort.SendLEDStripConfig(ledClockPin, ledDataPin);
+
+            await arduinoPort.SetPinMode(stepperLeftEnable, ArduinoComPort.PinMode.Output);
+            await arduinoPort.SetPinMode(stepperRightEnable, ArduinoComPort.PinMode.Output);
+
+            await arduinoPort.DigitalWrite(stepperLeftEnable, ArduinoComPort.PinState.High);
+            await arduinoPort.DigitalWrite(stepperRightEnable, ArduinoComPort.PinState.High);
         }
 
         public bool HasArduino
@@ -41,60 +51,73 @@ namespace HoloBot
             private set { }
         }
 
-        private double arcLength(float deg, float radius)
+        private float arcLength(float deg, float radius)
         {
-            return (Math.PI * radius * deg) / 180;
+            return (float)((Math.PI * radius * deg) / 180.0f);
         }
 
         public async Task Move(float distance)
         {
-            byte direction = 0;
-            if (distance < 0)
+            await Move(distance, distance);
+        }
+
+        public async Task Move(float rightDistance, float leftDistance)
+        {
+            byte rightDirection = 0;
+            byte leftDirection = 0;
+            if (rightDistance < 0)
             {
-                direction = 1;
-                distance = Math.Abs(distance);
+                rightDirection = 1;
+                rightDistance = Math.Abs(rightDistance);
+            }
+            if (leftDistance < 0)
+            {
+                leftDirection = 1;
+                leftDistance = Math.Abs(leftDistance);
             }
 
-            var distanceL = stepsPerCM * distance;
-            var distanceR = stepsPerCM * distance;
+            var distanceL = stepsPerCM * leftDistance;
+            var distanceR = stepsPerCM * rightDistance;
 
             var distL = (uint)Math.Floor(distanceL);
             var distR = (uint)Math.Floor(distanceR);
 
             outstandingMoves = 2;
 
+            await arduinoPort.DigitalWrite(stepperLeftEnable, ArduinoComPort.PinState.Low);
+            await arduinoPort.DigitalWrite(stepperRightEnable, ArduinoComPort.PinState.Low);
+
+            await arduinoPort.SendStepperStep(stepperLeftDevice, leftDirection, distL, maxSpeed, acceleration,
+                async () =>
+                {
+                    outstandingMoves--;
+                    await arduinoPort.DigitalWrite(stepperLeftEnable, ArduinoComPort.PinState.High);
+                });
+
+            await arduinoPort.SendStepperStep(stepperRightDevice, rightDirection, distR, maxSpeed, acceleration,
+                async () =>
+                {
+                    outstandingMoves--;
+                    await arduinoPort.DigitalWrite(stepperLeftEnable, ArduinoComPort.PinState.High);
+                });
+        }
+
+        public async Task Rotate(float degrees)
+        {
+            var lengthInCM = arcLength(degrees, wheelBaseRadius);
+            await Move(-lengthInCM, lengthInCM);
+        }
+
+        public async Task Stop()
+        {
+            // Stop is used for emergencies during run, but not a primary scenaro. For now, toggle enable
             await arduinoPort.DigitalWrite(stepperLeftEnable, ArduinoComPort.PinState.High);
             await arduinoPort.DigitalWrite(stepperRightEnable, ArduinoComPort.PinState.High);
-
-            await arduinoPort.SendStepperStep(stepperLeftDevice, direction, distL, maxSpeed, acceleration, 
-                async () =>
-                {
-                    outstandingMoves--;
-                    await arduinoPort.DigitalWrite(stepperLeftEnable, ArduinoComPort.PinState.Low);
-                });
-
-            await arduinoPort.SendStepperStep(stepperRightDevice, direction, distR, maxSpeed, acceleration,
-                async () =>
-                {
-                    outstandingMoves--;
-                    await arduinoPort.DigitalWrite(stepperLeftEnable, ArduinoComPort.PinState.Low);
-                });
         }
 
-        public void Move(float rightDistance, float leftDistance)
+        public async Task SetLedColor(byte r, byte g, byte b)
         {
-        }
-
-        public void Rotate(float degrees)
-        {
-        }
-
-        public void Stop()
-        {
-        }
-
-        public void SetLedColor(byte r, byte g, byte b)
-        {
+            await arduinoPort.SetLEDStripColor(r, g, b);
         }
 
         public void RaiseNeck()

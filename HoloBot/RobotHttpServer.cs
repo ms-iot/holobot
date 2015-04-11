@@ -136,7 +136,7 @@ namespace HoloBot
                             byte r = byte.Parse(querybag.GetFirstValueByName("r"));
                             byte g = byte.Parse(querybag.GetFirstValueByName("g"));
                             byte b = byte.Parse(querybag.GetFirstValueByName("b"));
-                            bot.SetLedColor(r, g, b);
+                            await bot.SetLedColor(r, g, b);
                             await WriteResponseAsync("200 OK", successMsg, outstream);
                             break;
                         }
