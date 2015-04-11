@@ -159,6 +159,7 @@ namespace HoloBot
                 await arduinoPort.AnalogWrite(neckMotorPWMPin, neckMotorDutyCycle);
                 await Task.Delay(neckTravelDuration); // Yucky, could require some tuning
                 await StopNeck();
+                neckextended = true;
             }
         }
 
@@ -170,6 +171,8 @@ namespace HoloBot
                 await arduinoPort.AnalogWrite(neckMotorPWMPin, neckMotorDutyCycle);
                 await Task.Delay(neckTravelDuration); // Yucky, could require some tuning
                 await StopNeck();
+
+                neckextended = false;
             }
         }
 
@@ -186,6 +189,8 @@ namespace HoloBot
                 await arduinoPort.AnalogWrite(selfieBoomPWMPin, armMotorDutyCycle);
                 await Task.Delay(armTravelDuration); // Yucky, could require some tuning
                 await StopNeck();
+
+                armextended = true;
             }
         }
 
@@ -197,6 +202,7 @@ namespace HoloBot
                 await arduinoPort.AnalogWrite(selfieBoomPWMPin, armMotorDutyCycle);
                 await Task.Delay(armTravelDuration); // Yucky, could require some tuning
                 await StopNeck();
+                armextended = false;
             }
         }
 

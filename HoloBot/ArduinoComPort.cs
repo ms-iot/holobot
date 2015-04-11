@@ -13,6 +13,7 @@ namespace HoloBot
         {
             PinMode = 0xF4,
             DigitalWrite = 0x90,
+            AnalogWrite = 0xE0
         };
 
         enum SysEx : byte
@@ -47,6 +48,7 @@ namespace HoloBot
         {
             public PinMode mode;
             public PinState state;
+            public short duty;
         };
 
         private const uint PinCount = 20;
@@ -146,11 +148,15 @@ namespace HoloBot
             await WriteData(commandBuffer);
         }
 
-        public async Task AnalogWrite(byte pin, byte dutycycle)
+        public async Task AnalogWrite(byte pin, short dutycycle)
         {
+            pinData[pin].duty = dutycycle;
+
             byte[] commandBuffer =
             {
-
+                (byte)(((byte)(FirmataCommand.AnalogWrite)) | pin),
+                (byte)(dutycycle & 0x7f),
+                (byte)((dutycycle >> 7) & 0x7F)
             };
 
             await WriteData(commandBuffer);
