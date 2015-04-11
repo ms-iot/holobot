@@ -6,24 +6,26 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
+using System.Diagnostics;
 
 namespace HoloBot
 {
     public sealed class RobotHttpServer : IDisposable
     {
         private const uint bufLen = 8192;
-        private int defaultPort = 50001;
+        private int defaultPort = 3000;
         private readonly StreamSocketListener sock;
         internal HoloLensRobot bot;
         private string lastCommand = string.Empty;
-        private const string successMsg = "{ success=\"ok\" }";
+        private const string successMsg = "{success=\"ok\"}";
 
         internal RobotHttpServer(int serverPort, HoloLensRobot bot)
         {
             this.bot = bot;
             sock = new StreamSocketListener();
+            sock.Control.KeepAlive = true;
             defaultPort = serverPort;
-            sock.ConnectionReceived += (s, e) => ProcessRequestAsync(e.Socket);
+            sock.ConnectionReceived += async (s, e) => await ProcessRequestAsync(e.Socket);
         }
 
         internal async void StartServer()
@@ -32,7 +34,7 @@ namespace HoloBot
             await sock.BindServiceNameAsync(defaultPort.ToString());
         }
 
-        private async void ProcessRequestAsync(StreamSocket socket)
+        private async Task ProcessRequestAsync(StreamSocket socket)
         {
             // Read in the HTTP request, we only care about type 'GET'
             StringBuilder requestFull = new StringBuilder(string.Empty);
@@ -53,6 +55,11 @@ namespace HoloBot
             {
                 try
                 {
+                    if (requestFull.Length == 0)
+                    {
+                        throw (new Exception("WTF dude?"));
+                    }
+
                     string requestStart = requestFull.ToString().Split('\n')[0];
                     string[] requestParts = requestStart.Split(' ');
                     string requestMethod = requestParts[0];
@@ -62,14 +69,20 @@ namespace HoloBot
                     }
 
                     string requestPath = requestParts[1];
-                    string botCmd = requestPath.Split('?')[1].ToLower();
+                    var splits = requestPath.Split('?');
+                    if (splits.Length < 2)
+                    {
+                        throw (new Exception("EMPTY OR MISSING QUERY STRING"));
+                    }
+
+                    string botCmd = splits[1].ToLower();
                     if(string.IsNullOrEmpty(botCmd))
                     {
                         throw (new Exception("EMPTY OR MISSING QUERY STRING"));
                     }
 
                     WwwFormUrlDecoder queryBag = new WwwFormUrlDecoder(botCmd);
-                    ProcessCommand(queryBag, output);
+                    await ProcessCommand(queryBag, output);
                 }
                 catch (Exception e)
                 {
@@ -79,14 +92,16 @@ namespace HoloBot
             }
         }
 
-        private async void ProcessCommand(WwwFormUrlDecoder querybag, IOutputStream outstream)
+        private async Task ProcessCommand(WwwFormUrlDecoder querybag, IOutputStream outstream)
         {
             try
             {
                 if (!bot.HasArduino)
+                {
                     throw new IOException("No Arduino Device Connected");
+                }
 
-                string botCmd = querybag.GetFirstValueByName("command"); // Throws System.ArgumentException if not found
+                string botCmd = querybag.GetFirstValueByName("cmd"); // Throws System.ArgumentException if not found
                 switch (botCmd)
                 {
                     case "stop":
@@ -104,7 +119,7 @@ namespace HoloBot
                     case "move":
                         {
                             float dst = float.Parse(querybag.GetFirstValueByName("dst"));
-                            bot.Move(dst);
+                            await bot.Move(dst);
                             await WriteResponseAsync("200 OK", successMsg, outstream);
                             break;
                         }
@@ -179,27 +194,30 @@ namespace HoloBot
 
         private async Task WriteResponseAsync(string statuscode, string response, IOutputStream outstream)
         {
-            string respBody = string.IsNullOrEmpty(response) ? string.Empty : response;
-            string statCode = string.IsNullOrEmpty(statuscode) ? "200 OK" : statuscode;
-
-            using (Stream resp = outstream.AsStreamForWrite())
+            using (DataWriter writer = new DataWriter(outstream))
             {
-                byte[] bodyArray = Encoding.UTF8.GetBytes(respBody);
-                MemoryStream stream = new MemoryStream(bodyArray);
+                try
+                {
+                    string respBody = string.IsNullOrEmpty(response) ? string.Empty : response;
+                    string statCode = string.IsNullOrEmpty(statuscode) ? "200 OK" : statuscode;
 
-                string header = String.Format("HTTP/1.1 {0}\r\n" +
-                                              "Content-Type: text/html\r\n" +
-                                              "Content-Length: {1}\r\n" +
-                                              "Connection: close\r\n\r\n",
-                                              statuscode, stream.Length);
+                    string header = String.Format("HTTP/1.1 {0}\r\n" +
+                                                  "Content-Type: text/html\r\n" +
+                                                  "Content-Length: {1}\r\n" +
+                                                  "Connection: close\r\n\r\n",
+                                                  statuscode, response.Length);
 
-                byte[] headerArray = Encoding.UTF8.GetBytes(header);
-                await resp.WriteAsync(headerArray, 0, headerArray.Length);
-                await stream.CopyToAsync(resp);
-                await resp.FlushAsync();
+                    writer.WriteString(header);
+                    writer.WriteString(respBody);
+                    await writer.StoreAsync();
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message + "\n" + e.StackTrace);
+                }
             }
         }
-        
+
         public void Dispose()
         {
             sock.Dispose();

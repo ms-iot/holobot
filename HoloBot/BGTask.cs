@@ -9,7 +9,7 @@ namespace HoloBot
         private BackgroundTaskDeferral taskDeferral;
         private ThreadPoolTimer RobotStateTimer;
         private RobotHttpServer server;
-        private readonly int port = 50001;
+        private readonly int port = 3000;
         private readonly int TaskIntervalSeconds = 15;
         internal HoloLensRobot Bot;
 
