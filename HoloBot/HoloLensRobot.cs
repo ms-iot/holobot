@@ -15,7 +15,7 @@ namespace HoloBot
         public const float wheelBaseRadius = wheelBase / 2.0f;
         public const short maxSpeed = 1500;
         public const short acceleration = 800;
-        public const uint neckTravelDuration = 3000; // ms
+        public const int neckTravelDuration = 3000; // ms
 
         private ArduinoComPort arduinoPort = new ArduinoComPort();
 

@@ -219,7 +219,7 @@ namespace HoloBot
             await WriteData(commandBuffer);
         }
 
-        public async Task RaiseNeck(uint duration)
+        public async Task RaiseNeck(int duration)
         {
             byte[] commandBuffer =
             {
@@ -228,9 +228,11 @@ namespace HoloBot
                 (byte)SysEx.End
             };
             await WriteData(commandBuffer);
+            await Task.Delay(duration); // Yucky, could require some tuning
+            await StopNeck();
         }
 
-        public async Task LowerNeck(uint duration)
+        public async Task LowerNeck(int duration)
         {
             byte[] commandBuffer =
             {
@@ -239,6 +241,8 @@ namespace HoloBot
                 (byte)SysEx.End
             };
             await WriteData(commandBuffer);
+            await Task.Delay(duration); // Yucky, could require some tuning
+            await StopNeck();
         }
 
         public async Task StopNeck()
