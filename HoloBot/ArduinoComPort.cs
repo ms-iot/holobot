@@ -146,6 +146,16 @@ namespace HoloBot
             await WriteData(commandBuffer);
         }
 
+        public async Task AnalogWrite(byte pin, byte dutycycle)
+        {
+            byte[] commandBuffer =
+            {
+
+            };
+
+            await WriteData(commandBuffer);
+        }
+
         public async Task SendStepperConfig(byte deviceNumber, short stepsPerRev, byte dirPin, byte stepPin)
         {
             byte[] commandBuffer = 
@@ -216,43 +226,6 @@ namespace HoloBot
                 (byte)SysEx.End
             };
 
-            await WriteData(commandBuffer);
-        }
-
-        public async Task RaiseNeck(int duration)
-        {
-            byte[] commandBuffer =
-            {
-                (byte)SysEx.Start,
-                // DC Motor Pin analogwrite call
-                (byte)SysEx.End
-            };
-            await WriteData(commandBuffer);
-            await Task.Delay(duration); // Yucky, could require some tuning
-            await StopNeck();
-        }
-
-        public async Task LowerNeck(int duration)
-        {
-            byte[] commandBuffer =
-            {
-                (byte)SysEx.Start,
-                // DC Motor Pin analogwrite call
-                (byte)SysEx.End
-            };
-            await WriteData(commandBuffer);
-            await Task.Delay(duration); // Yucky, could require some tuning
-            await StopNeck();
-        }
-
-        public async Task StopNeck()
-        {
-            byte[] commandBuffer =
-            {
-                (byte)SysEx.Start,
-                // DC Motor Pin analogwrite call
-                (byte)SysEx.End
-            };
             await WriteData(commandBuffer);
         }
 

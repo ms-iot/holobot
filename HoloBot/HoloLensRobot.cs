@@ -16,6 +16,7 @@ namespace HoloBot
         public const short maxSpeed = 1500;
         public const short acceleration = 800;
         public const int neckTravelDuration = 3000; // ms
+        public const byte neckMotorDutyCycle = 128;
 
         private ArduinoComPort arduinoPort = new ArduinoComPort();
 
@@ -24,6 +25,12 @@ namespace HoloBot
 
         private byte stepperLeftEnable = 5;     // Inverted enable
         private byte stepperRightEnable = 8;     // Inverted enable
+
+        private byte neckMotorPWMPin = 3;
+        private byte neckMotorDirPin = 12;
+
+        private byte selfieBoomPWMPin = 11;
+        private byte selfieDirPin = 13;
 
         private byte ledClockPin = 10;
         private byte ledDataPin = 9;
@@ -39,13 +46,19 @@ namespace HoloBot
             await arduinoPort.SendStepperConfig(stepperLeftDevice, stepsPerRotation, 2, 4);
             await arduinoPort.SendStepperConfig(stepperRightDevice, stepsPerRotation, 6, 7);
 
+            await arduinoPort.DigitalWrite(stepperLeftEnable, ArduinoComPort.PinState.High);
+            await arduinoPort.DigitalWrite(stepperRightEnable, ArduinoComPort.PinState.High);
+
             await arduinoPort.SendLEDStripConfig(ledClockPin, ledDataPin);
 
             await arduinoPort.SetPinMode(stepperLeftEnable, ArduinoComPort.PinMode.Output);
             await arduinoPort.SetPinMode(stepperRightEnable, ArduinoComPort.PinMode.Output);
 
-            await arduinoPort.DigitalWrite(stepperLeftEnable, ArduinoComPort.PinState.High);
-            await arduinoPort.DigitalWrite(stepperRightEnable, ArduinoComPort.PinState.High);
+            await arduinoPort.SetPinMode(neckMotorDirPin, ArduinoComPort.PinMode.Output);
+            await arduinoPort.SetPinMode(neckMotorPWMPin, ArduinoComPort.PinMode.PWM);
+
+            await arduinoPort.SetPinMode(selfieDirPin, ArduinoComPort.PinMode.Output);
+            await arduinoPort.SetPinMode(selfieBoomPWMPin, ArduinoComPort.PinMode.PWM);
         }
 
         public bool HasArduino
@@ -133,7 +146,10 @@ namespace HoloBot
         {
             if (!neckextended)
             {
-                await arduinoPort.RaiseNeck(neckTravelDuration);
+                await arduinoPort.DigitalWrite(neckMotorDirPin, ArduinoComPort.PinState.High);
+                await arduinoPort.AnalogWrite(neckMotorPWMPin, neckMotorDutyCycle);
+                await Task.Delay(neckTravelDuration); // Yucky, could require some tuning
+                await StopNeck();
             }
         }
 
@@ -141,8 +157,16 @@ namespace HoloBot
         {
             if (neckextended)
             {
-                await arduinoPort.LowerNeck(neckTravelDuration);
+                await arduinoPort.DigitalWrite(neckMotorDirPin, ArduinoComPort.PinState.Low);
+                await arduinoPort.AnalogWrite(neckMotorPWMPin, neckMotorDutyCycle);
+                await Task.Delay(neckTravelDuration); // Yucky, could require some tuning
+                await StopNeck();
             }
+        }
+
+        public async Task StopNeck()
+        {
+            await arduinoPort.AnalogWrite(neckMotorPWMPin, 0);
         }
     }
 }
