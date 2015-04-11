@@ -17,6 +17,8 @@ namespace HoloBot
         public const short acceleration = 800;
         public const int neckTravelDuration = 3000; // ms
         public const byte neckMotorDutyCycle = 128;
+        public const int armTravelDuration = 6000; //ms
+        public const byte armMotorDutyCycle = 255; // 12v motor
 
         private ArduinoComPort arduinoPort = new ArduinoComPort();
 
@@ -36,6 +38,7 @@ namespace HoloBot
         private byte ledDataPin = 9;
 
         private bool neckextended = false;
+        private bool armextended = false;
 
         private int outstandingMoves = 0;
 
@@ -70,6 +73,12 @@ namespace HoloBot
         public bool NeckExtended
         {
             get { return neckextended; }
+            private set { }
+        }
+
+        public bool ArmExtended
+        {
+            get { return armextended; }
             private set { }
         }
 
@@ -168,5 +177,33 @@ namespace HoloBot
         {
             await arduinoPort.AnalogWrite(neckMotorPWMPin, 0);
         }
+
+        public async Task RaiseArm()
+        {
+            if (!armextended)
+            {
+                await arduinoPort.DigitalWrite(selfieDirPin, ArduinoComPort.PinState.High);
+                await arduinoPort.AnalogWrite(selfieBoomPWMPin, armMotorDutyCycle);
+                await Task.Delay(armTravelDuration); // Yucky, could require some tuning
+                await StopNeck();
+            }
+        }
+
+        public async Task LowerArm()
+        {
+            if (armextended)
+            {
+                await arduinoPort.DigitalWrite(selfieDirPin, ArduinoComPort.PinState.Low);
+                await arduinoPort.AnalogWrite(selfieBoomPWMPin, armMotorDutyCycle);
+                await Task.Delay(armTravelDuration); // Yucky, could require some tuning
+                await StopNeck();
+            }
+        }
+
+        public async Task StopArm()
+        {
+            await arduinoPort.AnalogWrite(selfieBoomPWMPin, 0);
+        }
+
     }
 }

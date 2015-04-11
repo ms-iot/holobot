@@ -191,11 +191,29 @@ namespace HoloBot
                             await WriteResponseAsync("200 OK", successMsg, outstream);
                             break;
                         }
+                    case "armextend":
+                        {
+                            if (bot.ArmExtended)
+                            {
+                                await bot.RaiseArm();
+                            }
 
+                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            break;
+                        }
+
+                    case "armretract":
+                        {
+                            if (bot.ArmExtended)
+                            {
+                                await bot.LowerArm();
+                            }
+
+                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            break;
+                        }
                     case "neckextendtime":
                     case "neckretracttime":
-                    case "armextend":
-                    case "armretract":
                     case "armextendtime":
                     case "armretracttime":
                     case "camcapture":
