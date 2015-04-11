@@ -125,7 +125,7 @@ namespace HoloBot
             byte port = (byte)(pin / 8);
             int portValue = 0;
 
-            for (var i = 0; i < pinData.Length; i++)
+            for (var i = 0; i < 8; i++)
             {
                 if (pinData[8 * port + i].state == PinState.High)
                 {
