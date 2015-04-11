@@ -45,7 +45,7 @@ namespace HoloBot
         };
 
         private const uint PinCount = 20;
-        private const uint MaxSysexSize = 32;
+        private const uint MaxSysexSize = 512;
         private PinData[] pinData = new PinData[PinCount];
 
 
@@ -230,34 +230,37 @@ namespace HoloBot
                 uint offset = 0;
                 while (true)
                 {
-                    await reader.LoadAsync(1);
-                    sysexBuffer[offset] = reader.ReadByte();
-
-                    if (sysexBuffer[offset] == (byte)SysEx.End)
+                    var result = await reader.LoadAsync(1);
+                    while (reader.UnconsumedBufferLength > 0)
                     {
-                        // Got a sysex message.
-                        //Dispatch
+                        sysexBuffer[offset] = reader.ReadByte();
 
-                        switch (sysexBuffer[1])
+                        if (sysexBuffer[offset] == (byte)SysEx.End)
                         {
-                            case (byte)SysEx.StepperCommand:
-                                {
-                                    var deviceNumber = sysexBuffer[2];
-                                    stepperComplete[deviceNumber]();
-                                }
-                                break;
-                            default:
-                                {
-                                    Debug.WriteLine(String.Format("Received a Sysex Response which I'm not handling: {0}", sysexBuffer[1]));
-                                }
-                                break;
-                        }
+                            // Got a sysex message.
+                            //Dispatch
 
-                        offset = 0;
-                    }
-                    else
-                    {
-                        offset++;
+                            switch (sysexBuffer[1])
+                            {
+                                case (byte)SysEx.StepperCommand:
+                                    {
+                                        var deviceNumber = sysexBuffer[2];
+                                        stepperComplete[deviceNumber]();
+                                    }
+                                    break;
+                                default:
+                                    {
+                                        Debug.WriteLine(String.Format("Received a Sysex Response which I'm not handling: {0}", sysexBuffer[1]));
+                                    }
+                                    break;
+                            }
+
+                            offset = 0;
+                        }
+                        else
+                        {
+                            offset++;
+                        }
                     }
                 }
             });
