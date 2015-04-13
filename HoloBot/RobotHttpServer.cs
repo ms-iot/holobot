@@ -36,59 +36,68 @@ namespace HoloBot
 
         private async Task ProcessRequestAsync(StreamSocket socket)
         {
-            // Read in the HTTP request, we only care about type 'GET'
-            StringBuilder requestFull = new StringBuilder(string.Empty);
-            using (IInputStream input = socket.InputStream)
+            try
             {
-                byte[] data = new byte[bufLen];
-                IBuffer buffer = data.AsBuffer();
-                uint dataRead = bufLen;
-                while (dataRead == bufLen)
+                // Read in the HTTP request, we only care about type 'GET'
+                StringBuilder requestFull = new StringBuilder(string.Empty);
+                using (IInputStream input = socket.InputStream)
                 {
-                    await input.ReadAsync(buffer, bufLen, InputStreamOptions.Partial);
-                    requestFull.Append(Encoding.UTF8.GetString(data, 0, data.Length));
-                    dataRead = buffer.Length;
+                    byte[] data = new byte[bufLen];
+                    IBuffer buffer = data.AsBuffer();
+                    uint dataRead = bufLen;
+                    while (dataRead == bufLen)
+                    {
+                        await input.ReadAsync(buffer, bufLen, InputStreamOptions.Partial);
+                        requestFull.Append(Encoding.UTF8.GetString(data, 0, data.Length));
+                        dataRead = buffer.Length;
+                    }
+                }
+
+                using (IOutputStream output = socket.OutputStream)
+                {
+                    try
+                    {
+                        if (requestFull.Length == 0)
+                        {
+                            throw (new Exception("WTF dude?"));
+                        }
+
+                        string requestStart = requestFull.ToString().Split('\n')[0];
+                        string[] requestParts = requestStart.Split(' ');
+                        string requestMethod = requestParts[0];
+                        if (requestMethod.ToUpper() != "GET")
+                        {
+                            throw (new Exception("UNSUPPORTED HTTP REQUEST METHOD"));
+                        }
+
+                        string requestPath = requestParts[1];
+                        var splits = requestPath.Split('?');
+                        if (splits.Length < 2)
+                        {
+                            throw (new Exception("EMPTY OR MISSING QUERY STRING"));
+                        }
+
+                        string botCmd = splits[1].ToLower();
+                        if (string.IsNullOrEmpty(botCmd))
+                        {
+                            throw (new Exception("EMPTY OR MISSING QUERY STRING"));
+                        }
+
+                        WwwFormUrlDecoder queryBag = new WwwFormUrlDecoder(botCmd);
+                        await ProcessCommand(queryBag, output);
+                    }
+                    catch (Exception e)
+                    {
+                        // We use 'Bad Request' here since chances are the exception was caused by bad query strings
+                        await WriteResponseAsync("400 Bad Request", e.Message + e.StackTrace, output);
+                    }
                 }
             }
-
-            using (IOutputStream output = socket.OutputStream)
+            catch (Exception e)
             {
-                try
-                {
-                    if (requestFull.Length == 0)
-                    {
-                        throw (new Exception("WTF dude?"));
-                    }
-
-                    string requestStart = requestFull.ToString().Split('\n')[0];
-                    string[] requestParts = requestStart.Split(' ');
-                    string requestMethod = requestParts[0];
-                    if (requestMethod.ToUpper() != "GET")
-                    {
-                        throw (new Exception("UNSUPPORTED HTTP REQUEST METHOD"));
-                    }
-
-                    string requestPath = requestParts[1];
-                    var splits = requestPath.Split('?');
-                    if (splits.Length < 2)
-                    {
-                        throw (new Exception("EMPTY OR MISSING QUERY STRING"));
-                    }
-
-                    string botCmd = splits[1].ToLower();
-                    if(string.IsNullOrEmpty(botCmd))
-                    {
-                        throw (new Exception("EMPTY OR MISSING QUERY STRING"));
-                    }
-
-                    WwwFormUrlDecoder queryBag = new WwwFormUrlDecoder(botCmd);
-                    await ProcessCommand(queryBag, output);
-                }
-                catch (Exception e)
-                {
-                    // We use 'Bad Request' here since chances are the exception was caused by bad query strings
-                    await WriteResponseAsync("400 Bad Request", e.Message + e.StackTrace, output);
-                }
+                // Server can force shutdown which generates an exception. Spew it.
+                Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.StackTrace);
             }
         }
 
@@ -112,8 +121,20 @@ namespace HoloBot
                         }
                     case "status":
                         {
-                            string s = "{command=\"" + lastCommand + "\"}";
-                            await WriteResponseAsync("200 OK", s, outstream);
+                            if (bot.IsMoving)
+                            {
+                                float moveProgress = bot.MoveProgress;
+                                var moveProg = Math.Floor(moveProgress * 100.0f);
+
+                                string s = "{command=\"" + lastCommand + "\", percent=\"" + moveProg.ToString() + "\"}";
+                                await WriteResponseAsync("200 OK", s, outstream);
+                            }
+                            else
+                            {
+                                string s = "{command=\"" + lastCommand + "\"}";
+                                await WriteResponseAsync("200 OK", s, outstream);
+                            }
+
                             break;
                         }
                     case "move":
@@ -173,56 +194,102 @@ namespace HoloBot
                         }
                     case "neckextend":
                         {
-                            if (!bot.NeckExtended)
-                            {
-                                await bot.RaiseNeck();
-                            }
-
+                            await bot.RaiseNeck();
                             await WriteResponseAsync("200 OK", botCmd, outstream);
                             break;
                         }
                     case "neckretract":
                         {
-                            if (bot.NeckExtended)
-                            {
-                                await bot.LowerNeck();
-                            }
-
+                            await bot.LowerNeck();
                             await WriteResponseAsync("200 OK", successMsg, outstream);
                             break;
                         }
                     case "armextend":
                         {
-                            if (bot.ArmExtended)
-                            {
-                                await bot.RaiseArm();
-                            }
-
+                            await bot.RaiseArm();
                             await WriteResponseAsync("200 OK", successMsg, outstream);
                             break;
                         }
 
                     case "armretract":
                         {
-                            if (bot.ArmExtended)
-                            {
-                                await bot.LowerArm();
-                            }
-
+                            await bot.LowerArm();
                             await WriteResponseAsync("200 OK", successMsg, outstream);
                             break;
                         }
                     case "neckextendtime":
+                        {
+                            int time = int.Parse(querybag.GetFirstValueByName("ms"));
+                            await bot.RaiseNeck(time);
+
+                            await WriteResponseAsync("200 OK", botCmd, outstream);
+                            break;
+                        }
                     case "neckretracttime":
+                        {
+                            int time = int.Parse(querybag.GetFirstValueByName("ms"));
+                            await bot.LowerNeck(time);
+
+                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            break;
+                        }
                     case "armextendtime":
+                        {
+                            int time = int.Parse(querybag.GetFirstValueByName("ms"));
+                            await bot.RaiseArm(time);
+
+                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            break;
+                        }
                     case "armretracttime":
+                        {
+                            int time = int.Parse(querybag.GetFirstValueByName("ms"));
+                            await bot.LowerArm(time);
+
+                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            break;
+                        }
                     case "camcapture":
+                        {
+                            await WriteResponseAsync("400 OK", successMsg, outstream);
+                            break;
+                        }
                     case "getbattery":
+                        {
+                            string s = "{success=\"ok\", \"percent\"=\"50\"}";
+                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            break;
+                        }
                     case "getwifi":
+                        {
+                            string s = "{success=\"ok\", \"percent\"=\"90\"}";
+                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            break;
+                        }
                     case "getcompass":
+                        {
+                            string s = "{success=\"ok\", \"heading\"=\"90\"}";
+                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            break;
+                        }
                     case "getaltitude":
+                        {
+                            string s = "{success=\"ok\", \"altitude\"=\"2400m\"}";
+                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            break;
+                        }
                     case "gettemp":
+                        {
+                            string s = "{success=\"ok\", \"temp\"=\"72f\"}";
+                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            break;
+                        }
                     case "shutdown":
+                        {
+                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            // how do I initiate shutdown?
+                            break;
+                        }
                     default:
                         {
                             await WriteResponseAsync("400 Bad Request", string.Format("UNSUPPORTED COMMAND: {0}", botCmd), outstream);

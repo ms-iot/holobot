@@ -15,10 +15,11 @@ namespace HoloBot
         public const float wheelBaseRadius = wheelBase / 2.0f;
         public const short maxSpeed = 1500;
         public const short acceleration = 800;
-        public const int neckTravelDuration = 3000; // ms
-        public const byte neckMotorDutyCycle = 128;
+        public const int neckTravelDuration = 4000; // ms
+        public const byte neckMotorDutyCycle = 255;
         public const int armTravelDuration = 6000; //ms
         public const byte armMotorDutyCycle = 255; // 12v motor
+
 
         private ArduinoComPort arduinoPort = new ArduinoComPort();
 
@@ -27,6 +28,9 @@ namespace HoloBot
 
         private byte stepperLeftEnable = 5;     // Inverted enable
         private byte stepperRightEnable = 8;     // Inverted enable
+
+        private float stepperLeftProgress = 0;
+        private float stepperRightProgress = 0;
 
         private byte neckMotorPWMPin = 3;
         private byte neckMotorDirPin = 12;
@@ -82,6 +86,33 @@ namespace HoloBot
             private set { }
         }
 
+        public float StepperLeftProgress
+        {
+            get { return stepperLeftProgress; }
+            private set { }
+        }
+        public float StepperRightProgress
+        {
+            get { return stepperRightProgress; }
+            private set { }
+        }
+        public float MoveProgress
+        {
+            get
+            {
+                float progress = StepperLeftProgress * StepperRightProgress;
+                return stepperRightProgress;
+            }
+            private set { }
+        }
+
+        public bool IsMoving
+        {
+            get { return outstandingMoves > 0;  }
+            private set { }
+
+        }
+
         private float arcLength(float deg, float radius)
         {
             return (float)((Math.PI * radius * deg) / 180.0f);
@@ -123,6 +154,10 @@ namespace HoloBot
                 {
                     outstandingMoves--;
                     await arduinoPort.DigitalWrite(stepperLeftEnable, ArduinoComPort.PinState.High);
+                },
+                (float progress) =>
+                {
+                    stepperLeftProgress = progress;
                 });
 
             await arduinoPort.SendStepperStep(stepperRightDevice, rightDirection, distR, maxSpeed, acceleration,
@@ -130,6 +165,10 @@ namespace HoloBot
                 {
                     outstandingMoves--;
                     await arduinoPort.DigitalWrite(stepperLeftEnable, ArduinoComPort.PinState.High);
+                },
+                (float progress) =>
+                {
+                    stepperRightProgress = progress;
                 });
         }
 
@@ -151,28 +190,37 @@ namespace HoloBot
             await arduinoPort.SetLEDStripColor(r, g, b);
         }
 
-        public async Task RaiseNeck()
+        public async Task RaiseNeck(int duration = neckTravelDuration)
         {
-            if (!neckextended)
+            if (!neckextended || duration != neckTravelDuration)
             {
                 await arduinoPort.DigitalWrite(neckMotorDirPin, ArduinoComPort.PinState.High);
                 await arduinoPort.AnalogWrite(neckMotorPWMPin, neckMotorDutyCycle);
-                await Task.Delay(neckTravelDuration); // Yucky, could require some tuning
+                await Task.Delay(duration); // Yucky, could require some tuning
                 await StopNeck();
-                neckextended = true;
+
+                // If you are passing a duration, then we won't lock it.
+                if (duration == neckTravelDuration)
+                {
+                    neckextended = true;
+                }
             }
         }
 
-        public async Task LowerNeck()
+        public async Task LowerNeck(int duration = neckTravelDuration)
         {
-            if (neckextended)
+            if (neckextended || duration != neckTravelDuration)
             {
                 await arduinoPort.DigitalWrite(neckMotorDirPin, ArduinoComPort.PinState.Low);
                 await arduinoPort.AnalogWrite(neckMotorPWMPin, neckMotorDutyCycle);
-                await Task.Delay(neckTravelDuration); // Yucky, could require some tuning
+                await Task.Delay(duration); // Yucky, could require some tuning
                 await StopNeck();
 
-                neckextended = false;
+                // If you are passing a duration, then we won't lock it.
+                if (duration == neckTravelDuration)
+                {
+                    neckextended = false;
+                }
             }
         }
 
@@ -181,28 +229,36 @@ namespace HoloBot
             await arduinoPort.AnalogWrite(neckMotorPWMPin, 0);
         }
 
-        public async Task RaiseArm()
+        public async Task RaiseArm(int duration = armTravelDuration)
         {
-            if (!armextended)
+            if (!armextended || duration != armTravelDuration)
             {
                 await arduinoPort.DigitalWrite(selfieDirPin, ArduinoComPort.PinState.High);
                 await arduinoPort.AnalogWrite(selfieBoomPWMPin, armMotorDutyCycle);
-                await Task.Delay(armTravelDuration); // Yucky, could require some tuning
-                await StopNeck();
+                await Task.Delay(duration); // Yucky, could require some tuning
+                await StopArm();
 
-                armextended = true;
+                // If you are passing a duration, then we won't lock it.
+                if (duration == armTravelDuration)
+                {
+                    armextended = true;
+                }
             }
         }
 
-        public async Task LowerArm()
+        public async Task LowerArm(int duration = armTravelDuration)
         {
-            if (armextended)
+            if (armextended || duration != armTravelDuration)
             {
                 await arduinoPort.DigitalWrite(selfieDirPin, ArduinoComPort.PinState.Low);
                 await arduinoPort.AnalogWrite(selfieBoomPWMPin, armMotorDutyCycle);
-                await Task.Delay(armTravelDuration); // Yucky, could require some tuning
-                await StopNeck();
-                armextended = false;
+                await Task.Delay(duration); // Yucky, could require some tuning
+                await StopArm();
+                // If you are passing a duration, then we won't lock it.
+                if (duration == armTravelDuration)
+                {
+                    armextended = false;
+                }
             }
         }
 

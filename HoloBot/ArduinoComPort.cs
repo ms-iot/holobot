@@ -21,6 +21,7 @@ namespace HoloBot
             Start = 0xF0,
             End = 0xF7,
             StepperCommand = 0x72,
+            StepperProgress = 0x73,
             LEDStripConfigCommand = 0x74,
             LEDStripColorCommand = 0x75
         };
@@ -61,9 +62,10 @@ namespace HoloBot
         private DataReader reader = null;
 
         public delegate void StepperComplete();
+        public delegate void StepperProgress(float progress);
 
         private StepperComplete[] stepperComplete = new StepperComplete[5];
-
+        private StepperProgress[] stepperProgress = new StepperProgress[5];
 
 
         // NOTE: ASSUMES ONLY ONE ARDUINO DEVICE IS CONNECTED, FIRST FOUND WINS
@@ -181,7 +183,7 @@ namespace HoloBot
             await WriteData(commandBuffer);
         }
 
-        public async Task SendStepperStep(byte deviceNumber, byte direction, uint steps, short speed, short acceleration, StepperComplete completion)
+        public async Task SendStepperStep(byte deviceNumber, byte direction, uint steps, short speed, short acceleration, StepperComplete completion, StepperProgress progress)
         {
             byte[] commandBuffer =
             {
@@ -203,6 +205,7 @@ namespace HoloBot
             };
 
             stepperComplete[deviceNumber] = completion;
+            stepperProgress[deviceNumber] = progress;
 
             await WriteData(commandBuffer);
         }
@@ -291,6 +294,14 @@ namespace HoloBot
                                     {
                                         var deviceNumber = sysexBuffer[2];
                                         stepperComplete[deviceNumber]();
+                                    }
+                                    break;
+                                case (byte)SysEx.StepperProgress:
+                                    {
+                                        var deviceNumber = sysexBuffer[2];
+                                        var progress = sysexBuffer[3]; // this is 0 - 100; convert to 0 - 1 for easy math on this side.
+                                        float fProgress = progress / 100.0f;
+                                        stepperProgress[deviceNumber](fProgress);
                                     }
                                     break;
                                 default:
