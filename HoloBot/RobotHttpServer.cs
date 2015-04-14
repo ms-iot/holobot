@@ -257,31 +257,31 @@ namespace HoloBot
                     case "getbattery":
                         {
                             string s = "{success=\"ok\", \"percent\"=\"50\"}";
-                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            await WriteResponseAsync("200 OK", s, outstream);
                             break;
                         }
                     case "getwifi":
                         {
                             string s = "{success=\"ok\", \"percent\"=\"90\"}";
-                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            await WriteResponseAsync("200 OK", s, outstream);
                             break;
                         }
                     case "getcompass":
                         {
                             string s = "{success=\"ok\", \"heading\"=\"90\"}";
-                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            await WriteResponseAsync("200 OK", s, outstream);
                             break;
                         }
                     case "getaltitude":
                         {
                             string s = "{success=\"ok\", \"altitude\"=\"2400m\"}";
-                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            await WriteResponseAsync("200 OK", s, outstream);
                             break;
                         }
                     case "gettemp":
                         {
                             string s = "{success=\"ok\", \"temp\"=\"72f\"}";
-                            await WriteResponseAsync("200 OK", successMsg, outstream);
+                            await WriteResponseAsync("200 OK", s, outstream);
                             break;
                         }
                     case "shutdown":
