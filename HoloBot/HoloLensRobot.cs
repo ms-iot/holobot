@@ -53,13 +53,13 @@ namespace HoloBot
             await arduinoPort.SendStepperConfig(stepperLeftDevice, stepsPerRotation, 2, 4);
             await arduinoPort.SendStepperConfig(stepperRightDevice, stepsPerRotation, 6, 7);
 
+            await arduinoPort.SetPinMode(stepperLeftEnable, ArduinoComPort.PinMode.Output);
             await arduinoPort.DigitalWrite(stepperLeftEnable, ArduinoComPort.PinState.High);
+
+            await arduinoPort.SetPinMode(stepperRightEnable, ArduinoComPort.PinMode.Output);
             await arduinoPort.DigitalWrite(stepperRightEnable, ArduinoComPort.PinState.High);
 
             await arduinoPort.SendLEDStripConfig(ledClockPin, ledDataPin);
-
-            await arduinoPort.SetPinMode(stepperLeftEnable, ArduinoComPort.PinMode.Output);
-            await arduinoPort.SetPinMode(stepperRightEnable, ArduinoComPort.PinMode.Output);
 
             await arduinoPort.SetPinMode(neckMotorDirPin, ArduinoComPort.PinMode.Output);
             await arduinoPort.SetPinMode(neckMotorPWMPin, ArduinoComPort.PinMode.PWM);
@@ -125,16 +125,16 @@ namespace HoloBot
 
         public async Task Move(float rightDistance, float leftDistance)
         {
-            byte rightDirection = 0;
-            byte leftDirection = 0;
+            byte rightDirection = 1;
+            byte leftDirection = 1;
             if (rightDistance < 0)
             {
-                rightDirection = 1;
+                rightDirection = 0;
                 rightDistance = Math.Abs(rightDistance);
             }
             if (leftDistance < 0)
             {
-                leftDirection = 1;
+                leftDirection = 0;
                 leftDistance = Math.Abs(leftDistance);
             }
 
