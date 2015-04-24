@@ -164,7 +164,7 @@ namespace HoloBot
                 async () =>
                 {
                     outstandingMoves--;
-                    await arduinoPort.DigitalWrite(stepperLeftEnable, ArduinoComPort.PinState.High);
+                    await arduinoPort.DigitalWrite(stepperRightEnable, ArduinoComPort.PinState.High);
                 },
                 (float progress) =>
                 {
