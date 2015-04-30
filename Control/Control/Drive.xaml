@@ -1,0 +1,42 @@
+﻿<Page
+    x:Class="Control.Drive"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Control"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel Orientation="Vertical">
+        <TextBlock Text="Drive" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
+        <StackPanel Orientation="Horizontal">
+            <Button Tag="15" Content="+15" Click="MoveButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <Button Tag="50" Content="+50" Click="MoveButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <Button Tag="100" Content="+100" Click="MoveButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <Button Tag="500" Content="+500" Click="MoveButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Tag="-15" Content="-15" Click="MoveButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <Button Tag="-50" Content="-50" Click="MoveButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <Button Tag="-100" Content="-100" Click="MoveButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <Button Tag="-500" Content="-500" Click="MoveButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+        </StackPanel>
+        <TextBlock Text="Rotate" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
+        <StackPanel Orientation="Horizontal">
+            <Button Tag="5" Content="+5" Click="RotateButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <Button Tag="15" Content="+15" Click="RotateButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <Button Tag="45" Content="+45" Click="RotateButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <Button Tag="90" Content="+90" Click="RotateButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Tag="-5" Content="-5" Click="RotateButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <Button Tag="-15" Content="-15" Click="RotateButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <Button Tag="-45" Content="-45" Click="RotateButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <Button Tag="-90" Content="-90" Click="RotateButton_OnClick" HorizontalAlignment="Center" VerticalAlignment="Top" />
+        </StackPanel>
+
+
+        <Button x:Name="Done" Content="Back" 
+        HorizontalAlignment="Center" Margin="0,50,0,0" VerticalAlignment="Bottom" Click="Done_Click"/>
+    </StackPanel>
+</Page>
