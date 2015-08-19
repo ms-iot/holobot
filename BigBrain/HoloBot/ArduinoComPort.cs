@@ -90,10 +90,10 @@ namespace HoloBot
 
 
         // NOTE: ASSUMES ONLY ONE ARDUINO DEVICE IS CONNECTED, FIRST FOUND WINS
-        public async Task GetDevice(string selectorStr = "ALL", string identifyingSubStr = "VID_2341")
+        public async Task GetDevice(string identifyingSubStr = "VID_2341")
         {
             arduinoPort = null;
-            string selector = SerialDevice.GetDeviceSelector(selectorStr);
+            string selector = SerialDevice.GetDeviceSelector();
             var deviceCollection = await DeviceInformation.FindAllAsync(selector);
 
             if (deviceCollection.Count == 0)

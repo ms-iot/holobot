@@ -131,7 +131,7 @@ namespace HoloBot
                     throw new IOException("No Arduino Device Connected");
                 }
 
-                string botCmd = querybag.GetFirstValueByName("cmd"); // Throws System.ArgumentException if not found
+                string botCmd = querybag.GetFirstValueByName("cmd").ToLowerInvariant(); // Throws System.ArgumentException if not found
                 switch (botCmd)
                 {
                     case "stop":

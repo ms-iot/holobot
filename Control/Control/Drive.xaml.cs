@@ -37,7 +37,8 @@ namespace Control
     public sealed partial class Drive : Page
     {
         private string connectionName = null;
-        private CancellationToken buttonCancel;
+        private CancellationToken 
+            buttonCancel;
 
         public Drive()
         {
