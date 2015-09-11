@@ -57,6 +57,7 @@ namespace Control
             {
                 string url = "http://" + connectionName + ":3000/bot?cmd=" + command + "&" + paramName + "=" + value;
                 HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(url);
+                webRequest.Method = "GET";
                 webRequest.BeginGetResponse(BotRequest_Async, null);
 
             }
