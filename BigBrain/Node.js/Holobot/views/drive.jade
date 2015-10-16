@@ -1,0 +1,65 @@
+//
+    Copyright(c) Microsoft Corp. All rights reserved.
+    
+    The MIT License(MIT)
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files(the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions :
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+
+extends layout
+
+block content
+    script(type='text/javascript').
+        function move(value)
+        {
+            $.ajax({url: '/bot?cmd=move&dst=' + value});
+        }
+
+    script(type = 'text/javascript').
+        function rotate(value)
+        {
+            $.ajax({url: '/bot?cmd=rotate&deg=' + value});
+        }
+
+    script(type = 'text/javascript').
+        function extendArm()
+        {
+            $.ajax({url: '/bot?cmd=armextend'});
+        }
+
+    script(type = 'text/javascript').
+        function retractArm()
+        {
+            $.ajax({url: '/bot?cmd=armretract'});
+        }
+
+
+    h1="B15 Control"
+
+    button(onClick=('move(5)')) Forward<br> 5cm
+    button(onClick=('move(-5)')) Reverse<br> 5cm
+    button(onClick=('move(10)')) Forward<br> 10cm
+    button(onClick=('move(-10)')) Reverse<br> 10cm
+    button(onClick=('move(50)')) Forward<br> 50cm
+    button(onClick=('move(-50)')) Reverse<br> 50cm
+
+    <br>
+    button(onClick=('rotate(-15)')) Rotate left<br> 15deg
+    button(onClick=('rotate(15)')) Rotate right<br> 15deg
+
+    button(onClick=('rotate(-45)')) Rotate left<br> 45deg
+    button(onClick=('rotate(45)')) Rotate right<br> 45deg
+    button(onClick=('rotate(-90)')) Rotate left<br> 90deg
+    button(onClick=('rotate(90)')) Rotate right<br> 90deg
