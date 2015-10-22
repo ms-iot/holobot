@@ -1,3 +1,7 @@
+HoloBot's version of AdvancedFirmata
+===============
+This code was forked from [Sound Analogous's Advanced Firmata](https://github.com/soundanalogous/AdvancedFirmata) implementation. Minor changes were made to switch the stepper implementation to AccelStepper, and to implement custom firmata commands.
+
 AdvancedFirmata
 ===============
 
