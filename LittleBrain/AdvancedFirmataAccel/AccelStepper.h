@@ -176,6 +176,11 @@ public:
     /// be > 0. Speeds of more than 1000 steps per second are unreliable. 
     void    setMaxSpeed(float speed);
 
+    /// returns the maximum speed configured for this stepper
+    /// that was previously set by setMaxSpeed();
+    /// \return The currently configured maximum speed
+    float   maxSpeed();
+
     /// Sets the acceleration and deceleration parameter.
     /// \param[in] acceleration The desired acceleration in steps per second
     /// per second. Must be > 0.
