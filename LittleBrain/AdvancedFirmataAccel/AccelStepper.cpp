@@ -177,6 +177,11 @@ void AccelStepper::setMaxSpeed(float speed)
     computeNewSpeed();
 }
 
+float   AccelStepper::maxSpeed()
+{
+    return _maxSpeed;
+}
+
 void AccelStepper::setAcceleration(float acceleration)
 {
     _acceleration = acceleration;
