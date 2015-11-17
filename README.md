@@ -9,16 +9,14 @@ The HoloLens robotics in coordination with the Windows Maker team will demonstra
 
 ##Requirements
 - Clear field is available of at least 10'x10'
-- Floor is not tile or wood
 - Robot has tracking markers which can be seen despite stage lights
-- Robot can turn around its centroid
+- Robot can turn around its center
 - Robot can drive in a straight line
 - Robot can drive with centimeter accuracy
-- Robot can post photos from boom to twitter
 - Robot has RGB pixel displays which can be controlled via Holographic control panel
 - Robot is larger than 12"x12"x12", but no bigger than 18"x18"x12"
   * Needs to be seen by the audience
-  * Cannot be too big that the lens cannot see the whole bot
+  * Cannot be too big that the Hololens cannot see the whole bot
   * Top needs to be short and flat so the tracking beacons can be viewed
 - Robot needs to be able to move fast enough to transverse the field in less than 30 seconds.
 - Robot needs to be controlled at all times
@@ -26,14 +24,15 @@ The HoloLens robotics in coordination with the Windows Maker team will demonstra
 - Robot needs to have a battery which lasts for 20 minutes idle and 30 minutes driving time.
   * 20 minutes from the time that we make the unit hot until it is activated for demo
   * 30 minutes of active drive time for the duration of the demo.
-- Robot is able to query the battery lifetime
-- Robot is able to report battery to the holographic display.
 
 ##BOM
 **Frame**
 * [MakeBlock](http://MakeBlock.cc) Lab Kit
-* Machined Plexiglas Wheels (3D Printable wheels coming soon)
-* Machined axle (An alternative would be M8x1.25mm threaded rod)
+* [3D Printed Left Wheel](Parts/holobot_wheel_left.stl)
+* [3D Printed Right Wheel](Parts/holobot_wheel_right.stl)
+* M8x1.25mm threaded rod for axle
+* M8 lock bolts
+* M8 washers
 * Standard Caster
 * Machined Plexiglas mount (3D printable mount coming soon)
 * [MakeBlock](http://MakeBlock.cc) long bars (cut down to width)
@@ -70,7 +69,11 @@ The HoloLens robotics in coordination with the Windows Maker team will demonstra
 
 
 ##Frame
+The Holobot Frame is constructed using [MakeBlock](http://MakeBlock.cc) components. 
 ![Holobot](Images/Holobot.png)
+[Customize the wheels using Autodesk Fusion 360](http://a360.co/1NZI9nd)
+
+<iframe src="https://myhub.autodesk360.com/ue29a4fc5/shares/public/SHabee1QT1a327cf2b7a395d64d9ac759a9b?mode=embed" width="640" height="480" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"  frameborder="0"></iframe>
 
 ##Electronics
 ![Electronics diagram](Images/Electronics.png)
@@ -156,5 +159,13 @@ Responses will be of the form:
 - `bot?cmd=rotate;deg=90` -- Bot rotate right 90 (degrees in place)
 
 
-
+## Trivia
+* We built 5 robots for the //build demo. Originally we were going to have two, which we named Hansel and Gretel. To mitigate risk, we decided to make a total of 5 robots - we named the rest following the theme - Crumb, Ginger and Candy. [Candy](https://www.youtube.com/watch?v=r1PaAWvygQk) was built in Timelapse.
+* We started the project about 4 weeks before the demo.
+* IoT Core on Raspberry Pi GPIO was not functioning at the time we started the demo, so we used an Arduino for the motors
+* We originally were going to have the robot do a 'selfie', with an extending boom built using an Automotive antenna.
+* The neck was articulated with a motor - but we didn't use it in the demo becaue it was slow for the animation.
+* The caster caused us lots of grief - it would 'kick' when turning throwing off the tracking.
+* We rebuilt the lighting system just a few days before the demo because the overhead lights washed out our original system. However, we didn't want the lights to brown out the CPU, which is why it is on an independent circuit.
+* The mechanics were designed by [Bert](https://github.com/JustAddWires). He also machined the wheels, axle and caster mount. 
 
