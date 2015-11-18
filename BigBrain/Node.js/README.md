@@ -77,4 +77,5 @@ Cylon.robot({
   * Copy and unzip the file [here](https://github.com/ms-iot/ntvsiot/releases/download/2.0.4/serialport_WinIoT.zip) to your PC.
   * Copy &lt;Unzipped folder&gt;\uwp\arm\serialport.node to [Holobot project root]\node_modules\serialport\build\Release\node-&lt;Node version&gt;-win32-arm\serialport.node
 * Copy &lt;Unzipped folder&gt;\uwp\serialport.js to [Holobot project root]\node_modules\serialport\serialport.js.
-* Enter IP address of Raspberry Pi in project properties and press F5 to run and debug the application.
+* Enter the IP address of the Raspberry Pi 2 in project properties.
+* Press F5 to run and debug the application.
