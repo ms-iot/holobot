@@ -26,27 +26,7 @@ var constants = require('./constants');
 var spawn = require('child_process').spawn;
 var http = require('http');
 
-var upload = false;
-
-function uploadData(dist, bright) {
-    console.log('Uploading data: Distance Moved [%d], Brightness [%d]', dist, bright);
-
-    var options = {
-        //host: '',
-        //port: '',
-        //method: 'POST'
-    };
-    
-    var req = http.request(options);
-    
-    req.on('error', function (e) {
-        console.log('Problem uploading data: ' + e.message);
-    });
-    
-    var postData = JSON.stringify({ robotName: "B15", brightness : bright, distance: dist, sampleTime: new Date() })
-    req.write(postData);
-    req.end();
-}
+var doUpload = false; // Set to true to call upload() after move
 
 function arcLength(deg, radius) {
     return (Math.PI * radius * deg) / 180;
@@ -78,9 +58,8 @@ Bot.prototype.move = function(distance, res) {
 
     var moveCountR = function() {
         this.moveFinish();
-        if (upload) {
-            var brightness = Cylon.MCP.robots.B15.lightSensor.analogRead();
-            uploadData(distance, brightness);
+        if (doUpload) {
+            this.upload(distance, '', false);
         }
     }.bind(this);
 
@@ -92,6 +71,9 @@ Bot.prototype.move = function(distance, res) {
         Cylon.MCP.robots.B15.stepperLeft.move(constants.stepsPerCM * distance, moveCountL)) {
         this.moveCount = 2;
         this.lastCommand = "move";
+        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.header('Expires', '-1');
+        res.header('Pragma', 'no-cache');
         res.send("{success=\"ok\"}");
     } else {
         this.stop();
@@ -111,10 +93,43 @@ Bot.prototype.rotate = function(deg, res) {
         Cylon.MCP.robots.B15.stepperLeft.move(-constants.stepsPerCM * lengthInCM, moveCount)) {
         this.moveCount = 2;
         this.lastCommand = "rotate";
+        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.header('Expires', '-1');
+        res.header('Pragma', 'no-cache');
         res.send("{success=\"ok\"}");
     } else {
         this.stop();
         res.send("{success=\"ERROR: already moving\"}");
+    }
+}
+
+Bot.prototype.upload = function(dist, res, sendRes) {
+    var bright = Cylon.MCP.robots.B15.lightSensor.analogRead();
+    console.log('Uploading: Distance Moved [%d], Brightness [%d]', dist, bright);
+    var options = {
+        // Uncomment and add host/port values before using this function
+        //host: '',
+        //port: '',
+        method: 'POST'
+    };
+    
+    var req = http.request(options);
+    
+    req.on('error', function (e) {
+        console.log('Problem uploading data: ' + e.message);
+    });
+    
+    var postData = JSON.stringify({ robotName: "B15", brightness : bright, distance: dist, sampleTime: new Date() })
+    req.write(postData);
+    req.end();
+    
+    if(sendRes)
+    {
+		console.log('hello');
+        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.header('Expires', '-1');
+        res.header('Pragma', 'no-cache');
+        res.send("{success=\"ok\"}");
     }
 }
 
@@ -129,6 +144,9 @@ router.get('/', function(req, res, next) {
             break;
         case "rotate":
             bot.rotate(req.query.deg, res);
+           break
+        case "upload":
+            bot.upload(req.query.dst, res, true);
            break
         default:
             res.send("Unknown command " + req.query.cmd);
