@@ -1,7 +1,7 @@
 The Node.js Holobot code can either be run with either:
 
-* [Node.js (Chakra) console application](TODO) or
-* [Node.js (Chakra) UWP application](TODO).
+* [Node.js (ChakraCore) console application](http://aka.ms/nodecc_arm) or
+* [Node.js (Chakra) UWP application](http://aka.ms/ntvsiotlatest).
 
 This guide will take you through the steps to set up both versions to run on the Raspberry Pi 2 with 
 Windows 10 IoT Core.
@@ -38,21 +38,22 @@ Cylon.robot({
 //...
 ```
 
-#Node.js (Chakra) Console Application
-* Open a command prompt in &lt;Repo root&gt;\BigBrain\Node.js\Holobot.
+#Node.js (ChakraCore) Console Application
+* Install Node.js (ChakraCore) on your PC from [here](http://aka.ms/nodecc_msi).
+* Clone this repository and open a command prompt in &lt;Repo root&gt;\BigBrain\Node.js\Holobot.
 * Run `npm install` to download npm packages.
 * Even though serialport is installed when Cylon is installed, you still need to get a version that:  
   * Corresponds with the processor architecture of the device you are targeting (in this case ARM for Raspberry Pi 2).
   * Includes an [update](https://github.com/voodootikigod/node-serialport/pull/550) for serialport to work on Windows 10 IoT Core.  
 
   **Steps to get serialport:**   
-  * Copy and unzip the file [here](TODO) to your PC.
-  * Copy &lt;Unzipped folder&gt;\console\arm\serialport.node to [CylonSample folder path]\node_modules\serialport\build\Release\node-&lt;Node version&gt;-win32-arm\serialport.node
-* Copy Node.js (Chakra) from [here](TODO) to `c:\Node.js (Chakra)` on the Raspberry Pi 2.
+  * Copy and unzip the file [here](http://aka.ms/spcc_zip) to your PC.
+  * Copy &lt;Unzipped folder&gt;\console\arm\serialport.node to &lt;Repo root&gt;\node_modules\serialport\build\Release\node-&lt;Node version&gt;-win32-arm\serialport.node
+* Copy Node.js (ChakraCore) executable for ARM from [here](http://aka.ms/nodecc_arm) to `c:\Node.js (ChakraCore)` on the Raspberry Pi 2.
 * Copy &lt;Repo root&gt;\BigBrain\Node.js\Holobot to `c:\Holobot` on the Raspberry Pi 2.
 * In PowerShell, allow Node.js to communicate through the firewall with the following command:  
-  `netsh advfirewall firewall add rule name="Node.js" dir=in action=allow program="C:\Node.js (Chakra)\Node.exe" enable=yes`
-* Finally, run `& 'C:\Node.js (Chakra)\Node.exe' C:\Holobot\bin\www`
+  `netsh advfirewall firewall add rule name="Node.js" dir=in action=allow program="C:\Node.js (ChakraCore)\Node.exe" enable=yes`
+* Finally, run `& 'C:\Node.js (ChakraCore)\Node.exe' C:\Holobot\bin\www`
 
 
 #Node.js (Chakra) UWP Application
@@ -74,8 +75,8 @@ Cylon.robot({
   * Is UWP (Universal Windows Platform) compatible (built from [this](https://github.com/ms-iot/node-serialport/tree/uwp) fork of serialport).  
 
   **Steps to get serialport:**  
-  * Copy and unzip the file [here](https://github.com/ms-iot/ntvsiot/releases/download/2.0.4/serialport_WinIoT.zip) to your PC.
-  * Copy &lt;Unzipped folder&gt;\uwp\arm\serialport.node to [Holobot project root]\node_modules\serialport\build\Release\node-&lt;Node version&gt;-win32-arm\serialport.node
-* Copy &lt;Unzipped folder&gt;\uwp\serialport.js to [Holobot project root]\node_modules\serialport\serialport.js.
+  * Copy and unzip the file [here](http://aka.ms/spc_zip) to your PC.
+  * Copy &lt;Unzipped folder&gt;\uwp\arm\serialport.node to &lt;Repo root&gt;\node_modules\serialport\build\Release\node-&lt;Node version&gt;-win32-arm\serialport.node
+* Copy &lt;Unzipped folder&gt;\uwp\serialport.js to &lt;Repo root&gt;\node_modules\serialport\serialport.js.
 * Enter the IP address of the Raspberry Pi 2 in project properties.
 * Press F5 to run and debug the application.
