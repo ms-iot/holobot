@@ -32,19 +32,12 @@ block content
         {
             $.ajax({url: '/bot?cmd=rotate&deg=' + value});
         }
-
-    script(type = 'text/javascript').
-        function extendArm()
+        
+    script(type='text/javascript').
+        function upload(value)
         {
-            $.ajax({url: '/bot?cmd=armextend'});
+            $.ajax({url: '/bot?cmd=upload&dst=' + value});
         }
-
-    script(type = 'text/javascript').
-        function retractArm()
-        {
-            $.ajax({url: '/bot?cmd=armretract'});
-        }
-
 
     h1="B15 Control"
 
@@ -63,3 +56,5 @@ block content
     button(onClick=('rotate(45)')) Rotate right<br> 45deg
     button(onClick=('rotate(-90)')) Rotate left<br> 90deg
     button(onClick=('rotate(90)')) Rotate right<br> 90deg
+
+    button(onClick=('upload(0)')) Upload<br> Data
