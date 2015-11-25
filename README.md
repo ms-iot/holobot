@@ -164,7 +164,7 @@ Responses will be of the form:
 * We started the project about 4 weeks before the demo.
 * IoT Core on Raspberry Pi GPIO was not functioning at the time we started the demo, so we used an Arduino for the motors
 * We originally were going to have the robot do a 'selfie', with an extending boom built using an Automotive antenna.
-* The neck was articulated with a motor - but we didn't use it in the demo becaue it was slow for the animation.
+* The neck was articulated with a motor - but we didn't use it in the demo because it was slow for the animation.
 * The caster caused us lots of grief - it would 'kick' when turning throwing off the tracking.
 * We rebuilt the lighting system just a few days before the demo because the overhead lights washed out our original system. However, we didn't want the lights to brown out the CPU, which is why it is on an independent circuit.
 * The mechanics were designed by [Bert](https://github.com/JustAddWires). He also machined the wheels, axle and caster mount. 
