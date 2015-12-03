@@ -6,6 +6,7 @@ The Node.js Holobot code can either be run with either:
 This guide will take you through the steps to set up both versions to run on the Raspberry Pi 2 with 
 Windows 10 IoT Core.
 
+
 ##Set up the serial communication between the Raspberry Pi 2 and Arduino
 Get the string that identifies the COM port connected to the Arduino:
 
@@ -37,6 +38,14 @@ Cylon.robot({
 }).start();
 //...
 ```
+
+
+##Get Bootstrap code
+* Download Bootstrap source zip file from http://getbootstrap.com/getting-started/ and unzip to your PC.
+* Copy dist\js\bootstrap.min.js to &lt;Repo root&gt;\public\javascripts
+* Copy docs\assets\js\vendor\jquery.min.js to &lt;Repo root&gt;\public\javascripts
+* Copy dist\css\bootstrap.min.css to &lt;Repo root&gt;\public\stylesheets
+
 
 #Node.js (ChakraCore) Console Application
 * Install Node.js (ChakraCore) on your PC from [here](http://aka.ms/nodecc_msi).
