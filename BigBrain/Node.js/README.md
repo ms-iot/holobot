@@ -19,7 +19,7 @@ Get the string that identifies the COM port connected to the Arduino:
    
 **If (UWP Application)**
 
-* Replace the port in .\Holobot\app.js (see code snippet below) with the `USB\\\VID_2341&PID_0043\\\85436323631351311141` (be sure to add extra \ after both \\ characters)
+* Replace the port in .\Holobot\app.js (see code snippet below) with the `USB\\VID_2341&PID_0043\\85436323631351311141` (be sure to use double \ in the code)
 
 **If (Console Application)**
 
