@@ -50,7 +50,6 @@ if (J5) {
             accel: acceleration,
             decel: deceleration
         });
-        //stepperRight.accel(acceleration).decel(deceleration).speed(maxSpeed);
         
         stepperLeft = new five.Stepper({
             type: five.Stepper.TYPE.DRIVER,
@@ -63,7 +62,6 @@ if (J5) {
             accel: acceleration,
             decel: deceleration
         });
-        //stepperLeft.accel(acceleration).decel(deceleration).speed(maxSpeed);
 
         lightSensor = new five.Sensor("A0");
     });
