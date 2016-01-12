@@ -65,7 +65,7 @@ if (J5) {
 
         lightSensor = new five.Sensor("A0");
     });
-// Initialize the robot with Johnny-Five
+// Initialize the robot with Cylon
 } else {
     Cylon.config({
         logging: {
