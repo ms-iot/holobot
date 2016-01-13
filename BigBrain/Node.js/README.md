@@ -1,3 +1,7 @@
+This directory contains the Node.js code for the Holobot project. For hardware setup instructions, go to the repository [home page](https://github.com/ms-iot/holobot). 
+Note that the [command list](https://github.com/ms-iot/holobot#command-list) for the Node.js code only includes move, rotate, and stop.
+You have the option of using either Johnny-Five or Cylon to control the robot by setting 'J5' to true or false in [bot.js](https://github.com/ms-iot/holobot/blob/master/BigBrain/Node.js/Holobot/routes/bot.js). 
+
 The Node.js Holobot code can either be run with either:
 
 * [Node.js (ChakraCore) console application](http://aka.ms/nodecc_arm) or

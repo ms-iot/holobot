@@ -34,36 +34,35 @@ var http = require('http');
 
 // Initialize the robot with Johnny-Five
 if (J5) {
-    board.on("ready", function () {
-        var acceleration = 800;
-        var deceleration = 800;
-        var maxSpeed = 1500;
-        
+    board.on("ready", function () {   
         stepperRight = new five.Stepper({
             type: five.Stepper.TYPE.DRIVER,
-            stepsPerRev: 200,
+            stepsPerRev: constants.stepsPerRotation,
             pins: {
-                step: 4,
-                dir: 13
+                step: constants.stepperRightStepPin,
+                dir: constants.stepperRightDirectionPin
             },
-            speed: maxSpeed,
-            accel: acceleration,
-            decel: deceleration
+            speed: constants.maxSpeed,
+            accel: constants.acceleration,
+            decel: constants.deceleration
         });
         
         stepperLeft = new five.Stepper({
             type: five.Stepper.TYPE.DRIVER,
-            stepsPerRev: 200,
+            stepsPerRev: constants.stepsPerRotation,
             pins: {
-                step: 7,
-                dir: 6
+                step: constants.stepperLeftStepPin,
+                dir: constants.stepperLeftDirectionPin
             },
-            speed: maxSpeed,
-            accel: acceleration,
-            decel: deceleration
+            speed: constants.maxSpeed,
+            accel: constants.acceleration,
+            decel: constants.deceleration
         });
 
-        lightSensor = new five.Sensor("A0");
+        lightSensor = new five.Sensor({
+            pin: "A0",
+            limit: [constants.lightLowerLimit, constants.lightUpperLimit]
+        });
     });
 // Initialize the robot with Cylon
 } else {
@@ -80,18 +79,37 @@ if (J5) {
         },
         
         devices: {
-            stepperRight: { driver: 'stepper', driveType: 1, stepsPerRevolution: constants.stepsPerRotation, deviceNum: 0, stepPin: 4, dirPin: 13, enablePin: 5 },
-            stepperLeft: { driver: 'stepper', driveType: 1, stepsPerRevolution: constants.stepsPerRotation, deviceNum: 1, stepPin: 7, dirPin: 6, enablePin: 8 },
-            lightSensor: { driver: 'analog-sensor', pin: 0, lowerLimit: 100, upperLimit: 900 }
+            stepperRight: {
+                driver: 'stepper',
+                driveType: 1,
+                stepsPerRevolution: constants.stepsPerRotation,
+                deviceNum: 0,
+                stepPin: constants.stepperRightStepPin,
+                dirPin: constants.stepperRightDirectionPin,
+                enablePin: constants.stepperRightEnablePin
+            },
+            stepperLeft: {
+                driver: 'stepper',
+                driveType: 1,
+                stepsPerRevolution: constants.stepsPerRotation,
+                deviceNum: 1,
+                stepPin: constants.stepperLeftStepPin,
+                dirPin: constants.stepperLeftDirectionPin,
+                enablePin: constants.stepperLeftEnablePin
+            },
+            lightSensor: {
+                driver: 'analog-sensor',
+                pin: 0,
+                lowerLimit: constants.lightLowerLimit,
+                upperLimit: constants.lightUpperLimit
+            }
         },
         
         work: function (my) {
-            var acceleration = 800;
-            var maxSpeed = 1500;
-            my.stepperRight.setAcceleration(acceleration);
-            my.stepperRight.setMaxSpeed(maxSpeed);
-            my.stepperLeft.setAcceleration(acceleration);
-            my.stepperLeft.setMaxSpeed(maxSpeed);
+            my.stepperRight.setAcceleration(constants.acceleration);
+            my.stepperRight.setMaxSpeed(constants.maxSpeed);
+            my.stepperLeft.setAcceleration(constants.acceleration);
+            my.stepperLeft.setMaxSpeed(constants.maxSpeed);
         }
     }).start();
 }
@@ -105,29 +123,44 @@ var Bot = function() {
     this.moveCount = 0;
 }
 
-Bot.prototype.stop = function(res) {
+Bot.prototype.stop = function (res) {
+    var stopCompleted = function (err) {
+        if (err) {
+            console.log(err);
+        }
+    }
     if (J5) {
-        stepperRight.step({ state : Stepper.RUNSTATE.STOP }, function () {});
-        stepperLeft.step({ state : Stepper.RUNSTATE.STOP }, function () {});
+        stepperRight.step({
+            speed : 0,
+            direction: 0,
+            steps: 1
+        }, stopCompleted);
+        stepperLeft.step({
+            speed : 0,
+            direction: 0,
+            steps: 1
+        }, stopCompleted);
     } else {
-        Cylon.MCP.robots.B15.stepperRight.stop();
-        Cylon.MCP.robots.B15.stepperLeft.stop();
+        Cylon.MCP.robots.B15.stepperRight.halt(stopCompleted)
+        Cylon.MCP.robots.B15.stepperLeft.halt(stopCompleted);
     }
 
+    this.lastCommand = "stop";
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.header('Expires', '-1');
     res.header('Pragma', 'no-cache');
     res.send("{success=\"ok\"}");
 }
 
-var WHEELCOUNT = 2;
-
 Bot.prototype.move = function(distance, res) {
     console.log('Moving ' + distance);
-
-    var moveCount = function () {
+    
+    var moveCount = function (err) {
+        if (err) {
+            console.log(err);
+        }
         this.moveCount++;
-        if (this.moveCount == WHEELCOUNT) {
+        if (this.moveCount == constants.wheelCount) {
             if (doUpload) {
                 this.upload(distance, '', false);
             }
@@ -143,14 +176,16 @@ Bot.prototype.move = function(distance, res) {
             dir = 0;
             distance = Math.abs(distance);
         }
-        var stepRightResult = stepperRight.step({
+        stepperRight.step({
             steps : constants.stepsPerCM * distance, 
-            direction: dir
+            direction: dir,
+            speed: constants.maxSpeed
         }, moveCount);
         
-        var stepLeftResult = stepperLeft.step({
+        stepperLeft.step({
             steps : constants.stepsPerCM * distance, 
-            direction: dir
+            direction: dir,
+            speed: constants.maxSpeed
         }, moveCount);
     } else {
         Cylon.MCP.robots.B15.stepperRight.move(constants.stepsPerCM * distance, moveCount);
@@ -167,9 +202,12 @@ Bot.prototype.move = function(distance, res) {
 Bot.prototype.rotate = function(deg, res) {
     console.log('Rotating ' + deg);
  
-    var moveCount = function () {
+    var moveCount = function (err) {
+        if (err) {
+            console.log(err);
+        }
         this.moveCount++;
-        if (this.moveCount == WHEELCOUNT) { 
+        if (this.moveCount == constants.wheelCount) { 
             this.moveCount = 0;
         }
     }.bind(this);
@@ -190,12 +228,14 @@ Bot.prototype.rotate = function(deg, res) {
 
         stepperRight.step({
             steps : constants.stepsPerCM * lengthInCM, 
-            direction: dirRight
+            direction: dirRight,
+            speed: constants.maxSpeed
         }, moveCount);
         
         stepperLeft.step({
             steps : constants.stepsPerCM * lengthInCM, 
-            direction: dirLeft
+            direction: dirLeft,
+            speed: constants.maxSpeed
         }, moveCount);
     } else {
         Cylon.MCP.robots.B15.stepperRight.move(constants.stepsPerCM * lengthInCM, moveCount);
@@ -259,7 +299,10 @@ router.get('/', function(req, res, next) {
            break
         case "upload":
             bot.upload(req.query.dst, res, true);
-           break
+            break
+        case "stop":
+            bot.stop(res);
+            break;
         default:
             res.send("Unknown command " + req.query.cmd);
             break;
