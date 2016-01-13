@@ -28,37 +28,7 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var bot = require('./routes/bot');
 var drive = require('./routes/drive');
-var Cylon = require("cylon");
 var constants = require("./routes/constants");
-
-Cylon.config({
-    logging: {
-        level: 'debug'
-    }
-});
-
-// Initialize the robot
-Cylon.robot({
-    name: "B15",
-    connections: {
-        arduino: { adaptor: 'firmata', port: 'COM5' }
-    },
-
-    devices: {
-        stepperRight: { driver: 'stepper', driveType: 1, stepsPerRevolution: constants.stepsPerRotation, deviceNum: 0, stepPin: 4, dirPin: 13, enablePin: 5 },
-        stepperLeft: { driver: 'stepper', driveType: 1, stepsPerRevolution: constants.stepsPerRotation, deviceNum: 1, stepPin: 7, dirPin: 6, enablePin: 8 },
-        lightSensor: { driver: 'analog-sensor', pin: 0, lowerLimit: 100, upperLimit: 900 }
-    },
-    
-    work: function (my) {
-        var acceleration = 800;
-        var maxSpeed = 1500;
-        my.stepperRight.setAcceleration(acceleration);
-        my.stepperRight.setMaxSpeed(maxSpeed);
-        my.stepperLeft.setAcceleration(acceleration);
-        my.stepperLeft.setMaxSpeed(maxSpeed);
-    }
-}).start();
 
 var app = express();
 app.set("title", "B15");

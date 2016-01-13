@@ -39,6 +39,12 @@ block content
             $.ajax({url: '/bot?cmd=upload&dst=' + value});
         }
 
+    script(type='text/javascript').
+        function stop()
+        {
+            $.ajax({url: '/bot?cmd=stop'});
+        }
+
     h1="B15 Control"
 
     button(onClick=('move(5)')) Forward<br> 5cm
@@ -47,6 +53,8 @@ block content
     button(onClick=('move(-10)')) Reverse<br> 10cm
     button(onClick=('move(50)')) Forward<br> 50cm
     button(onClick=('move(-50)')) Reverse<br> 50cm
+
+    button(onClick=('stop()')) Stop
 
     <br>
     button(onClick=('rotate(-15)')) Rotate left<br> 15deg

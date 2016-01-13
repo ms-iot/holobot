@@ -1,3 +1,7 @@
+This directory contains the Node.js code for the Holobot project. For hardware setup instructions, go to the repository [home page](https://github.com/ms-iot/holobot). 
+Note that the [command list](https://github.com/ms-iot/holobot#command-list) for the Node.js code only includes move, rotate, and stop.
+You have the option of using either Johnny-Five or Cylon to control the robot by setting 'J5' to true or false in [bot.js](https://github.com/ms-iot/holobot/blob/master/BigBrain/Node.js/Holobot/routes/bot.js). 
+
 The Node.js Holobot code can either be run with either:
 
 * [Node.js (ChakraCore) console application](http://aka.ms/nodecc_arm) or
@@ -19,25 +23,27 @@ Get the string that identifies the COM port connected to the Arduino:
    
 **If (UWP Application)**
 
-* Replace the port in .\Holobot\app.js (see code snippet below) with the `USB\\VID_2341&PID_0043\\85436323631351311141` (be sure to use double \ in the code)
-
-**If (Console Application)**
-
-* In PowerShell, run `reg add "HKLM\SYSTEM\ControlSet001\Enum\`USB\VID_2341&PID_0043\85436323631351311141`\Device Parameters" /v "PortName" /t REG_SZ /d "COM5" /f`.
-* Then run `shutdown /r /t 0` to reboot the device.
-* When the device restarts, replace the port value in .\Holobot\app.js with 'COM5' (Note: This will work for UWP application as well).
-
+* If you are using Johnny-Five, nothing needs to be done. If you are using Cylon, replace the port value in .\Holobot\routes\bot.js (see code example below) with `USB\\VID_2341&PID_0043\\85436323631351311141` i.e. the string
+  you get from the devcon command above. Be sure to use double \ in the string.
+  
 ```JavaScript
 //...
 Cylon.robot({
     name: "B15",
     connections: {
-        arduino: { adaptor: 'firmata', port: 'COM5' }
+        arduino: { adaptor: 'firmata', port: 'USB\\VID_2341&PID_0043\\85436323631351311141' }
     },
 	//...
 }).start();
 //...
 ```
+
+**If (Console Application)**
+
+* In PowerShell, run `reg add "HKLM\SYSTEM\ControlSet001\Enum\`USB\VID_2341&PID_0043\85436323631351311141`\Device Parameters" /v "PortName" /t REG_SZ /d "COM5" /f`
+  (Use the string you get from the devcon command above)
+* Then run `shutdown /r /t 0` to reboot the device.
+* When the device restarts, COM5 will be available for the app to use.
 
 
 ##Get Bootstrap code
@@ -51,7 +57,7 @@ Cylon.robot({
 * Install Node.js (ChakraCore) on your PC from [here](http://aka.ms/nodecc_msi).
 * Clone this repository and open a command prompt in &lt;Repo root&gt;\BigBrain\Node.js\Holobot.
 * Run `npm install` to download npm packages.
-* Even though serialport is installed when Cylon is installed, you still need to get a version that:  
+* Even though serialport is installed when Johnny-Five or Cylon is installed, you still need to get a version that:  
   * Corresponds with the processor architecture of the device you are targeting (in this case ARM for Raspberry Pi 2).
   * Includes an [update](https://github.com/voodootikigod/node-serialport/pull/550) for serialport to work on Windows 10 IoT Core.  
 
@@ -80,7 +86,7 @@ Cylon.robot({
 * Right click on the npm node in the Solution Explorer and then select "Install Missing npm Packages(s)".
 * Right click on the node_modules folder in the Solution Explorer window. Then click on "Open Command Prompt Here...". 
   When the command window opens, run `npm dedupe`.
-* Even though serialport is installed when Cylon is installed, you still need to get a version that:  
+* Even though serialport is installed when Johnny-Five or Cylon is installed, you still need to get a version that:  
   * Corresponds with the processor architecture of the device you are targeting (in this case ARM for Raspberry Pi 2).
   * Is UWP (Universal Windows Platform) compatible (built from [this](https://github.com/ms-iot/node-serialport/tree/uwp) fork of serialport).  
 

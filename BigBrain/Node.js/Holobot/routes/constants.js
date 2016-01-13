@@ -35,6 +35,21 @@ define("stepsPerCM", module.exports.stepsPerRotation / module.exports.wheelCircu
 
 define("wheelBase", 38.1); //cm
 define("wheelBaseRadius", module.exports.wheelBase / 2.0);
+define("wheelCount", 2);
+
+define("acceleration", 800);
+define("deceleration", 800);
+define("maxSpeed", 1500);
+define("stepperRightStepPin", 4);
+define("stepperRightDirectionPin", 13);
+define("stepperRightEnablePin", 5);
+define("stepperLeftStepPin", 7);
+define("stepperLeftDirectionPin", 6);
+define("stepperLeftEnablePin", 8);
+
+define("lightLowerLimit", 100);
+define("lightUpperLimit", 900);
+
 
 console.log("Steps per rev " + module.exports.stepsPerRotation);
 console.log("Steps per cm " + module.exports.stepsPerCM);
