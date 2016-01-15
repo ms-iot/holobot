@@ -38,7 +38,7 @@ block content
         {
             $.ajax({url: '/bot?cmd=upload&dst=' + value});
         }
-
+        
     script(type='text/javascript').
         function stop()
         {
@@ -47,22 +47,64 @@ block content
 
     h1="B15 Control"
 
-    button(onClick=('move(5)')) Forward<br> 5cm
-    button(onClick=('move(-5)')) Reverse<br> 5cm
-    button(onClick=('move(10)')) Forward<br> 10cm
-    button(onClick=('move(-10)')) Reverse<br> 10cm
-    button(onClick=('move(50)')) Forward<br> 50cm
-    button(onClick=('move(-50)')) Reverse<br> 50cm
-
+    button(onClick=('move(10)'))  Go Forward<br> 10cm
+    button(onClick=('move(-10)')) Go Reverse<br> 10cm
+    button(onClick=('move(50)')) Go Forward<br> 50cm
+    button(onClick=('move(-50)')) Go Reverse<br> 50cm
     button(onClick=('stop()')) Stop
 
     <br>
-    button(onClick=('rotate(-15)')) Rotate left<br> 15deg
-    button(onClick=('rotate(15)')) Rotate right<br> 15deg
+    button(onClick=('rotate(-15)')) Rotate  Left<br> 15deg
+    button(onClick=('rotate(15)')) Rotate Right<br> 15deg
 
-    button(onClick=('rotate(-45)')) Rotate left<br> 45deg
-    button(onClick=('rotate(45)')) Rotate right<br> 45deg
-    button(onClick=('rotate(-90)')) Rotate left<br> 90deg
-    button(onClick=('rotate(90)')) Rotate right<br> 90deg
+    button(onClick=('rotate(-45)')) Rotate  Left<br> 45deg
+    button(onClick=('rotate(45)')) Rotate Right<br> 45deg
+    
+    script(type='text/javascript').
+        // Uncomment and replace X.X.X.X with the IP address of the server with data before using the data buttons
+        // var server = "http://X.X.X.X:1337";
 
-    button(onClick=('upload(0)')) Upload<br> Data
+        function getData(response)
+        {
+            var atpos = response.lastIndexOf('@');
+            return response.substr(0, atpos - 1);
+        }
+
+        function getExploreTime()
+        {
+            var xhttp = new XMLHttpRequest();
+            var exploreTimeParagraph = document.getElementById("exploreTimeParagraph");
+     
+            
+            xhttp.open("GET", server + "/time", true);
+            xhttp.onreadystatechange = function () {
+              if (xhttp.readyState === 4) {
+                  exploreTimeParagraph.innerHTML = getData(xhttp.responseText);
+              }
+            };
+            xhttp.send(null);
+        }
+
+        function getAvgBrightness()
+        {
+            var xhttp = new XMLHttpRequest();
+            var avgBrightParagraph = document.getElementById("avgBrightParagraph");
+
+            xhttp.open("GET", server + "/bright", true);
+            xhttp.onreadystatechange = function () {
+              if (xhttp.readyState === 4) {
+                  avgBrightParagraph.innerHTML =  getData(xhttp.responseText);
+              }
+            };
+            xhttp.send(null);
+        }
+        
+    hr
+    h1="B15 Data"
+    
+    button#avgBrightButton(onclick="getAvgBrightness()") Average Brightness
+    p#avgBrightParagraph
+    br
+    button#exploreTimeButton(onclick="getExploreTime()") Exploration Time
+    p#exploreTimeParagraph
+    br

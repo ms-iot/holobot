@@ -46,6 +46,7 @@ Cylon.robot({
 * When the device restarts, COM5 will be available for the app to use.
 
 
+
 ##Get Bootstrap code
 * Download Bootstrap source zip file from http://getbootstrap.com/getting-started/ and unzip to your PC.
 * Copy dist\js\bootstrap.min.js to &lt;Repo root&gt;\public\javascripts
@@ -53,23 +54,37 @@ Cylon.robot({
 * Copy dist\css\bootstrap.min.css to &lt;Repo root&gt;\public\stylesheets
 
 
+
 #Node.js (ChakraCore) Console Application
+
+###Set up your PC
 * Install Node.js (ChakraCore) on your PC from [here](http://aka.ms/nodecc_msi).
+
+###Install npm packages
 * Clone this repository and open a command prompt in &lt;Repo root&gt;\BigBrain\Node.js\Holobot.
-* Run `npm install` to download npm packages.
-* Even though serialport is installed when Johnny-Five or Cylon is installed, you still need to get a version that:  
+* Run `npm install` to download the npm packages that are needed.
+
+###Get serialport
+Even though serialport is installed when Johnny-Five or Cylon is installed, you still need to get a version that:  
   * Corresponds with the processor architecture of the device you are targeting (in this case ARM for Raspberry Pi 2).
   * Includes an [update](https://github.com/voodootikigod/node-serialport/pull/550) for serialport to work on Windows 10 IoT Core.  
 
-**Steps to get serialport:**
-
 * Copy and unzip the file [here](http://aka.ms/spcc_zip) to your PC.
-* Copy &lt;Unzipped folder&gt;\console\arm\serialport.node to &lt;Repo root&gt;\node_modules\serialport\build\Release\node-&lt;Node version&gt;-win32-arm\serialport.node
+* Copy &lt;Unzipped folder&gt;\console\arm\serialport.node to &lt;Repo root&gt;\BigBrain\Node.js\Holobot\node_modules\serialport\build\Release\node-&lt;Node version&gt;-win32-arm\serialport.node
 * Copy Node.js (ChakraCore) executable for ARM from [here](http://aka.ms/nodecc_arm) to `c:\Node.js (ChakraCore)` on the Raspberry Pi 2.
-* Copy &lt;Repo root&gt;\BigBrain\Node.js\Holobot to `c:\Holobot` on the Raspberry Pi 2.
-* In PowerShell, allow Node.js to communicate through the firewall with the following command:  
+
+###Copy the app to the Raspberry Pi 2
+* Copy &lt;Repo root&gt;\BigBrain\Node.js\Holobot to `c:\Holobot` on the Raspberry Pi 2. You can use [Windows file sharing](http://ms-iot.github.io/content/en-US/win10/samples/SMB.htm), 
+  [PowerShell](http://ms-iot.github.io/content/en-US/win10/samples/PowerShell.htm), or [SSH](http://ms-iot.github.io/content/en-US/win10/samples/SSH.htm) to do this.
+  
+###Open up the firewall for Node.js
+* In PowerShell window connected to the Raspberry Pi 2, allow Node.js to communicate through the firewall with the following command:  
   `netsh advfirewall firewall add rule name="Node.js" dir=in action=allow program="C:\Node.js (ChakraCore)\Node.exe" enable=yes`
+  
+###Run the app!
 * Finally, run `& 'C:\Node.js (ChakraCore)\Node.exe' C:\Holobot\bin\www`
+* You can then use the web page `<IP Address of robot>:3000\drive` to move the robot with buttons or build your own app to send custom requests.
+
 
 
 #Node.js (Chakra) UWP Application
@@ -80,20 +95,40 @@ Cylon.robot({
 * Install the latest Node.js Tools for Windows IoT from [here](https://github.com/ms-iot/ntvsiot/releases).
 * Install [Python 2.7](https://www.python.org/downloads/)
 
-
-###Deploy Application
+###Install npm packages
 * Open .\Holobot.sln.
 * Right click on the npm node in the Solution Explorer and then select "Install Missing npm Packages(s)".
 * Right click on the node_modules folder in the Solution Explorer window. Then click on "Open Command Prompt Here...". 
-  When the command window opens, run `npm dedupe`.
-* Even though serialport is installed when Johnny-Five or Cylon is installed, you still need to get a version that:  
+  When the command window opens, run `npm dedupe`. *Don't skip this step*.
+  
+###Get serialport
+Even though serialport is installed when Johnny-Five or Cylon is installed, you still need to get a version that:  
   * Corresponds with the processor architecture of the device you are targeting (in this case ARM for Raspberry Pi 2).
   * Is UWP (Universal Windows Platform) compatible (built from [this](https://github.com/ms-iot/node-serialport/tree/uwp) fork of serialport).  
 
-**Steps to get serialport:**
-
 * Copy and unzip the file [here](http://aka.ms/spc_zip) to your PC.
-* Copy &lt;Unzipped folder&gt;\uwp\arm\serialport.node to &lt;Repo root&gt;\node_modules\serialport\build\Release\node-&lt;Node version&gt;-win32-arm\serialport.node
-* Copy &lt;Unzipped folder&gt;\uwp\serialport.js to &lt;Repo root&gt;\node_modules\serialport\serialport.js.
-* Enter the IP address of the Raspberry Pi 2 in project properties.
+* Copy &lt;Unzipped folder&gt;\uwp\arm\serialport.node to &lt;Repo root&gt;\BigBrain\Node.js\Holobot\node_modules\serialport\build\Release\node-&lt;Node version&gt;-win32-arm\serialport.node
+* Copy &lt;Unzipped folder&gt;\uwp\serialport.js to &lt;Repo root&gt;\BigBrain\Node.js\Holobot\node_modules\serialport\serialport.js.
+
+###Deploy the app!
+* Enter the IP address of the Raspberry Pi 2 in the project properties of Holobot.njsproj.
 * Press F5 to run and debug the application.
+* You can then use the web page `<IP Address of robot>:3000\drive` to move the robot with buttons or build your own app to send custom requests.
+
+
+
+#Uploading light sensor data
+You can attach a photoresistor (light sensor) to the Arduino on the Holobot and upload the data to the sample server in this repository.
+
+###Hardware 
+The hardware required and setup can be found on [this page](https://www.arduino.cc/en/Tutorial/AnalogInput).
+
+###To upload the data:
+* In a command prompt, run `node <Repo root>\BigBrain\Node.js\Holobot\server.js`. This will start the server that listens and stores the data being uploaded by the robot.
+* In [bot.js](https://github.com/ms-iot/holobot/blob/master/BigBrain/Node.js/Holobot/routes/bot.js):
+  * Set `doUpload` to true.
+  * In the upload function, enter the IP address of the host which matches the server you started.
+* In [drive.jade](https://github.com/ms-iot/holobot/blob/master/BigBrain/Node.js/Holobot/views/drive.jade):
+  * Enter the IP address of the server (used in the step above) in the JavaScript code.
+Now everytime the robot moves, it will upload the light sensor value to the server. You can use the "Average Brightness" and "Exploration Time" buttons in `<IP Address of robot>:3000\drive` to view the data.
+

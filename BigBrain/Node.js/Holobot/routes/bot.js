@@ -260,9 +260,9 @@ Bot.prototype.upload = function (dist, res, sendRes) {
     }
     console.log('Uploading: Distance Moved [%d], Brightness [%d]', dist, brightnessValue);
     var options = {
-        // Uncomment and add host/port values before using this function
+        // Uncomment and add host value (IP address of server to upload to) before using this function
         //host: '',
-        //port: '',
+        port: '1338',
         method: 'POST'
     };
     
