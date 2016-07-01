@@ -169,3 +169,7 @@ Responses will be of the form:
 * We rebuilt the lighting system just a few days before the demo because the overhead lights washed out our original system. However, we didn't want the lights to brown out the CPU, which is why it is on an independent circuit.
 * The mechanics were designed by [Bert](https://github.com/JustAddWires). He also machined the wheels, axle and caster mount. 
 
+===
+
+This project has adopted the [Microsoft Open Source Code of Conduct](http://microsoft.github.io/codeofconduct). For more information see the [Code of Conduct FAQ](http://microsoft.github.io/codeofconduct/faq.md) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
