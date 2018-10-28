@@ -1,4 +1,4 @@
-#Holobot
+# Holobot
 
 The HoloLens robotics in coordination with the Windows Maker team will demonstrate:
 - Raspberry Pi 2 running Windows 10 Core.
@@ -7,7 +7,7 @@ The HoloLens robotics in coordination with the Windows Maker team will demonstra
 - Navigation and obstacle avoidance leveraging scene mapping via external sensor
 
 
-##Requirements
+## Requirements
 - Clear field is available of at least 10'x10'
 - Robot has tracking markers which can be seen despite stage lights
 - Robot can turn around its center
@@ -25,7 +25,7 @@ The HoloLens robotics in coordination with the Windows Maker team will demonstra
   * 20 minutes from the time that we make the unit hot until it is activated for demo
   * 30 minutes of active drive time for the duration of the demo.
 
-##BOM
+## BOM
 **Frame**
 * [MakeBlock](http://MakeBlock.cc) Lab Kit
 * [3D Printed Left Wheel](Parts/holobot_wheel_left.stl)
@@ -68,14 +68,14 @@ The HoloLens robotics in coordination with the Windows Maker team will demonstra
 * Foam PVC for the floor of the robot, where the electronics are mounted
 
 
-##Frame
+## Frame
 The Holobot Frame is constructed using [MakeBlock](http://MakeBlock.cc) components. 
 ![Holobot](Images/Holobot.png)
 [Customize the wheels using Autodesk Fusion 360](http://a360.co/1NZI9nd)
 
 <iframe src="https://myhub.autodesk360.com/ue29a4fc5/shares/public/SHabee1QT1a327cf2b7a395d64d9ac759a9b?mode=embed" width="640" height="480" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"  frameborder="0"></iframe>
 
-##Electronics
+## Electronics
 ![Electronics diagram](Images/Electronics.png)
 
 ### Arduino Wiring
@@ -90,7 +90,7 @@ The Holobot Frame is constructed using [MakeBlock](http://MakeBlock.cc) componen
 * 10   -   LED Strip Clock Pin
 * 12   -   Neck Direction
 
-##Software Stack
+## Software Stack
 
 **HoloLens Application**
 The HoloLens Experiences team will be implementing the HoloLens application. It will locate the robot by name. When activated, the HoloLens application will command the robot.
@@ -107,14 +107,14 @@ The Robot object takes raw commands and interprets them in the context of the ro
 **Arduino Object**
 The Arduino object will manage the connection and send commands using Firmata.
 
-##Command structure
+## Command structure
 Commands are HTTP web requests of the form:
 - `bot?cmd=<COMMAND>;<COMMAND_PARAM>;<COMMAND_PARAM>`
  
 Responses will be of the form:
 - JSON data structure
  
-##Command list
+## Command list
 - `stop`
   * Description: All stop (full motion reset)
   * Response: {success="<ok, ERROR_CODE>"}
@@ -149,12 +149,12 @@ Responses will be of the form:
   * Description: Reports rotational direction from north (in degrees)
   * Response: {success="<ok, ERROR_CODE>", angle="<0-360>"}
  
-##Error codes
+## Error codes
 - `error - General error` -- (no specific information to give)
 - `error_invalid_request` -- Invalid request
 - `error_system_state` -- System/bot is in a bad state, cannot complete request right now
  
-##Examples
+## Examples
 - `bot?cmd=move;dst=100` -- Bot to go forwards 100 cm
 - `bot?cmd=rotate;deg=90` -- Bot rotate right 90 (degrees in place)
 
@@ -169,7 +169,7 @@ Responses will be of the form:
 * We rebuilt the lighting system just a few days before the demo because the overhead lights washed out our original system. However, we didn't want the lights to brown out the CPU, which is why it is on an independent circuit.
 * The mechanics were designed by [Bert](https://github.com/JustAddWires). He also machined the wheels, axle and caster mount. 
 
-===
+---
 
 This project has adopted the [Microsoft Open Source Code of Conduct](http://microsoft.github.io/codeofconduct). For more information see the [Code of Conduct FAQ](http://microsoft.github.io/codeofconduct/faq.md) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
