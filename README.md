@@ -71,9 +71,8 @@ The HoloLens robotics in coordination with the Windows Maker team will demonstra
 ##Frame
 The Holobot Frame is constructed using [MakeBlock](http://MakeBlock.cc) components. 
 ![Holobot](Images/Holobot.png)
+![B15 Wheel](Images/B15_Wheel.png)
 [Customize the wheels using Autodesk Fusion 360](http://a360.co/1NZI9nd)
-
-<iframe src="https://myhub.autodesk360.com/ue29a4fc5/shares/public/SHabee1QT1a327cf2b7a395d64d9ac759a9b?mode=embed" width="640" height="480" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"  frameborder="0"></iframe>
 
 ##Electronics
 ![Electronics diagram](Images/Electronics.png)
